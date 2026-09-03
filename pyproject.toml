@@ -5,7 +5,9 @@ description = "Citation-backed research agent with an evaluation harness"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
-dependencies = []
+dependencies = [
+    "anthropic>=0.40",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -13,9 +15,15 @@ dev = [
     "ruff>=0.6",
 ]
 
+[project.scripts]
+evidence-agent = "evidence_agent.baseline:main"
+
 [build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.ruff]
 line-length = 100
