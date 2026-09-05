@@ -8,6 +8,8 @@ license = { text = "MIT" }
 dependencies = [
     "anthropic>=0.40",
     "tavily-python>=0.5",
+    "langgraph>=1.0",
+    "pydantic>=2.0",
 ]
 
 [project.optional-dependencies]
@@ -19,6 +21,7 @@ dev = [
 [project.scripts]
 evidence-agent = "evidence_agent.baseline:main"
 evidence-agent-search = "evidence_agent.search_baseline:main"
+evidence-agent-graph = "evidence_agent.run_graph:main"
 
 [build-system]
 requires = ["setuptools>=68"]
