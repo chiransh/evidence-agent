@@ -1,7 +1,19 @@
-from typing import TypedDict
+from pydantic import BaseModel
 
 
-class ResearchState(TypedDict):
+class SearchResultItem(BaseModel):
+    title: str
+    url: str
+    snippet: str
+
+
+class Finding(BaseModel):
+    claim: str
+    source_url: str
+
+
+class ResearchState(BaseModel):
     question: str
-    sub_questions: list[str]
-    search_results: dict[str, list[dict[str, str]]]
+    sub_questions: list[str] = []
+    search_results: dict[str, list[SearchResultItem]] = {}
+    findings: list[Finding] = []

@@ -21,7 +21,7 @@ def planner_node(state: ResearchState) -> dict:
                 "content": (
                     "Break the following research question into 2-4 focused sub-questions, "
                     "each narrow enough to answer with a single web search. "
-                    f"Question: {state['question']}"
+                    f"Question: {state.question}"
                 ),
             }
         ],
