@@ -17,3 +17,4 @@ class ResearchState(BaseModel):
     sub_questions: list[str] = []
     search_results: dict[str, list[SearchResultItem]] = {}
     findings: list[Finding] = []
+    report: str = ""
