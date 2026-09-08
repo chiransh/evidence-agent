@@ -8,7 +8,7 @@ from evidence_agent.graph import build_graph
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Run the Planner -> Searcher -> Synthesizer -> Writer graph on a question."
+        description="Run the Planner -> Searcher -> Credibility -> Synthesizer -> Writer graph on a question."
     )
     parser.add_argument("question", nargs="?", help="Question to research. Reads stdin if omitted.")
     args = parser.parse_args()

@@ -5,6 +5,7 @@ class SearchResultItem(BaseModel):
     title: str
     url: str
     snippet: str
+    credibility_score: float | None = None
 
 
 class Finding(BaseModel):
