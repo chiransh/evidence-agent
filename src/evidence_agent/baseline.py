@@ -3,18 +3,17 @@
 import argparse
 import sys
 
-import anthropic
-
-MODEL = "claude-opus-5"
+from evidence_agent.exceptions import EvidenceAgentError
+from evidence_agent.llm import MODEL, client, model_errors
 
 
 def ask(question: str) -> str:
-    client = anthropic.Anthropic()
-    response = client.messages.create(
-        model=MODEL,
-        max_tokens=16000,
-        messages=[{"role": "user", "content": question}],
-    )
+    with model_errors():
+        response = client().messages.create(
+            model=MODEL,
+            max_tokens=16000,
+            messages=[{"role": "user", "content": question}],
+        )
     return next(block.text for block in response.content if block.type == "text")
 
 
@@ -29,8 +28,8 @@ def main() -> None:
 
     try:
         print(ask(question))
-    except (TypeError, anthropic.AuthenticationError):
-        parser.error("no valid Anthropic credentials found (set ANTHROPIC_API_KEY or run `ant auth login`)")
+    except EvidenceAgentError as exc:
+        parser.error(str(exc))
 
 
 if __name__ == "__main__":

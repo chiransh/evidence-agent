@@ -5,12 +5,10 @@ rationale and known limitations."""
 from typing import Callable
 from urllib.parse import urlparse
 
-import anthropic
 from pydantic import BaseModel
 
+from evidence_agent.llm import MODEL, client, model_errors
 from evidence_agent.state import ResearchState, SearchResultItem
-
-MODEL = "claude-opus-5"
 
 DOMAIN_REPUTATION: dict[str, float] = {
     "wikipedia.org": 0.75,
@@ -63,18 +61,18 @@ def judge_relevance(question: str, results: list[SearchResultItem]) -> dict[str,
         return {}
 
     listing = "\n\n".join(f"{r.url}\n{r.title}\n{r.snippet}" for r in results)
-    client = anthropic.Anthropic()
-    response = client.messages.parse(
-        model=MODEL,
-        max_tokens=4096,
-        system=(
-            "Rate how directly each search result helps answer the question, from 0 "
-            "(irrelevant) to 1 (directly answers it). Return exactly one judgment per "
-            "result, using its url exactly as given."
-        ),
-        messages=[{"role": "user", "content": f"Question: {question}\n\nResults:\n{listing}"}],
-        output_format=RelevanceJudgments,
-    )
+    with model_errors():
+        response = client().messages.parse(
+            model=MODEL,
+            max_tokens=4096,
+            system=(
+                "Rate how directly each search result helps answer the question, from 0 "
+                "(irrelevant) to 1 (directly answers it). Return exactly one judgment per "
+                "result, using its url exactly as given."
+            ),
+            messages=[{"role": "user", "content": f"Question: {question}\n\nResults:\n{listing}"}],
+            output_format=RelevanceJudgments,
+        )
     return {j.url: j.relevance for j in response.parsed_output.judgments}
 
 

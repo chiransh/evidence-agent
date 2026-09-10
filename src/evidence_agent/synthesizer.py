@@ -1,9 +1,7 @@
-import anthropic
 from pydantic import BaseModel
 
+from evidence_agent.llm import MODEL, client, model_errors
 from evidence_agent.state import Finding, ResearchState, SearchResultItem
-
-MODEL = "claude-opus-5"
 
 
 class Findings(BaseModel):
@@ -27,24 +25,24 @@ def synthesizer_node(state: ResearchState) -> dict:
 
     source_list = "\n\n".join(f"{url}\n{r.title}\n{r.snippet}" for url, r in sources.items())
 
-    client = anthropic.Anthropic()
-    response = client.messages.parse(
-        model=MODEL,
-        max_tokens=8000,
-        system=(
-            "Extract the key findings that answer the research question from the search "
-            "results below. Each finding is a single factual claim attributed to exactly "
-            "one source_url, copied verbatim from the URLs in the search results. Never "
-            "invent a URL that isn't listed."
-        ),
-        messages=[
-            {
-                "role": "user",
-                "content": f"Question: {state.question}\n\nSearch results:\n{source_list}",
-            }
-        ],
-        output_format=Findings,
-    )
+    with model_errors():
+        response = client().messages.parse(
+            model=MODEL,
+            max_tokens=8000,
+            system=(
+                "Extract the key findings that answer the research question from the search "
+                "results below. Each finding is a single factual claim attributed to exactly "
+                "one source_url, copied verbatim from the URLs in the search results. Never "
+                "invent a URL that isn't listed."
+            ),
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"Question: {state.question}\n\nSearch results:\n{source_list}",
+                }
+            ],
+            output_format=Findings,
+        )
 
     findings = _filter_valid_findings(response.parsed_output.findings, sources)
     return {"findings": findings}
