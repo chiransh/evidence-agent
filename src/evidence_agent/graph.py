@@ -22,21 +22,30 @@ NETWORK_RETRY = RetryPolicy(
 )
 
 
-def build_graph(checkpointer: BaseCheckpointSaver | None = None) -> CompiledStateGraph:
+def build_graph(
+    checkpointer: BaseCheckpointSaver | None = None, with_credibility: bool = True
+) -> CompiledStateGraph:
+    """with_credibility=False drops the credibility node, which is what the eval
+    harness scores against to see whether that node earns its cost."""
     graph = StateGraph(ResearchState)
 
     # Every node that touches the network gets the retry policy. Writer is pure
     # formatting, so a retry there would only repeat the same output.
     graph.add_node("planner", planner_node, retry_policy=NETWORK_RETRY)
     graph.add_node("searcher", searcher_node, retry_policy=NETWORK_RETRY)
-    graph.add_node("credibility", credibility_node, retry_policy=NETWORK_RETRY)
     graph.add_node("synthesizer", synthesizer_node, retry_policy=NETWORK_RETRY)
     graph.add_node("writer", writer_node)
 
     graph.add_edge(START, "planner")
     graph.add_edge("planner", "searcher")
-    graph.add_edge("searcher", "credibility")
-    graph.add_edge("credibility", "synthesizer")
+
+    if with_credibility:
+        graph.add_node("credibility", credibility_node, retry_policy=NETWORK_RETRY)
+        graph.add_edge("searcher", "credibility")
+        graph.add_edge("credibility", "synthesizer")
+    else:
+        graph.add_edge("searcher", "synthesizer")
+
     graph.add_edge("synthesizer", "writer")
     graph.add_edge("writer", END)
 

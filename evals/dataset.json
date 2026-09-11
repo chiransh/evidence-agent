@@ -1,0 +1,231 @@
+{
+  "notes": "Hand-written reference answers and key points. These are the harness's weakest link: they encode one author's view of what a good answer covers, and coverage scores are only as good as this list. Questions were chosen to have stable, widely documented answers so the reference stays correct over time. See notes/evaluation.md.",
+  "questions": [
+    {
+      "id": "supervised-vs-unsupervised",
+      "question": "What is the difference between supervised and unsupervised learning?",
+      "reference_answer": "Supervised learning trains on labelled examples, where each input is paired with the correct output, and learns to predict that output for new inputs. Unsupervised learning works on unlabelled data and finds structure in it, such as clusters or a lower-dimensional representation, without being told what the right answer is.",
+      "key_points": [
+        "Supervised learning uses labelled input and output pairs",
+        "Unsupervised learning works on unlabelled data",
+        "Supervised learning predicts a target; unsupervised learning finds structure such as clusters",
+        "Classification and regression are supervised; clustering and dimensionality reduction are unsupervised"
+      ]
+    },
+    {
+      "id": "financial-crisis-2008",
+      "question": "What caused the 2008 global financial crisis?",
+      "reference_answer": "The crisis grew out of a US housing bubble financed by large volumes of subprime mortgage lending. Those mortgages were packaged into mortgage-backed securities and collateralised debt obligations that were rated far safer than they were, spreading the risk across the financial system. When house prices fell and defaults rose, those securities collapsed in value, leaving highly leveraged banks insolvent and triggering a credit freeze.",
+      "key_points": [
+        "A US housing bubble and its collapse",
+        "Subprime mortgage lending to borrowers who could not repay",
+        "Securitisation into mortgage-backed securities and CDOs that obscured risk",
+        "Credit rating agencies rated these securities too favourably",
+        "High leverage at banks turned losses into insolvency and a credit freeze"
+      ]
+    },
+    {
+      "id": "http3-vs-http2",
+      "question": "How does HTTP/3 differ from HTTP/2?",
+      "reference_answer": "HTTP/3 runs over QUIC on UDP rather than over TCP as HTTP/2 does. Because QUIC handles streams independently, packet loss on one stream no longer stalls the others, which removes the transport-level head-of-line blocking HTTP/2 still suffers. QUIC also integrates TLS into the transport handshake, reducing connection setup round trips, and supports connection migration across network changes.",
+      "key_points": [
+        "HTTP/3 uses QUIC over UDP; HTTP/2 uses TCP",
+        "Eliminates TCP head-of-line blocking between streams",
+        "Faster connection establishment because TLS is integrated into the handshake",
+        "Supports connection migration when the network path changes"
+      ]
+    },
+    {
+      "id": "paris-agreement",
+      "question": "What is the Paris Agreement and what are its main goals?",
+      "reference_answer": "The Paris Agreement is an international climate treaty adopted in 2015 under the UN Framework Convention on Climate Change. Its central goal is to hold the rise in global average temperature well below 2 degrees Celsius above pre-industrial levels, with efforts to limit it to 1.5 degrees. Rather than assigning targets centrally, it asks each country to set and progressively strengthen its own nationally determined contributions, supported by transparency and reporting obligations.",
+      "key_points": [
+        "Adopted in 2015 under the UNFCCC",
+        "Goal of limiting warming to well below 2 degrees Celsius, pursuing 1.5 degrees",
+        "Countries set their own nationally determined contributions",
+        "Contributions are meant to ratchet up over time",
+        "Includes transparency and reporting requirements"
+      ]
+    },
+    {
+      "id": "mrna-vaccines",
+      "question": "How do mRNA vaccines work?",
+      "reference_answer": "An mRNA vaccine delivers messenger RNA encoding a pathogen protein, typically wrapped in lipid nanoparticles so it can enter cells. The cell's own ribosomes translate that mRNA into the protein, which the immune system then recognises as foreign and mounts a response against, producing antibodies and T-cell memory. The mRNA is degraded within days and never enters the cell nucleus or alters the recipient's DNA.",
+      "key_points": [
+        "Delivers mRNA encoding a pathogen protein, often the spike protein",
+        "Lipid nanoparticles protect the mRNA and help it enter cells",
+        "Host cell ribosomes translate the mRNA into the protein",
+        "The immune system responds to that protein, creating antibodies and memory",
+        "The mRNA degrades quickly and does not alter host DNA"
+      ]
+    },
+    {
+      "id": "crispr-cas9",
+      "question": "What is CRISPR-Cas9 and what is it used for?",
+      "reference_answer": "CRISPR-Cas9 is a gene editing tool adapted from a bacterial immune mechanism. A guide RNA directs the Cas9 nuclease to a matching DNA sequence, where Cas9 cuts both strands, and the cell's repair machinery then either disrupts the gene or incorporates a supplied template. It is used widely in research to knock out genes, and in developing therapies for genetic conditions such as sickle cell disease, as well as in agriculture.",
+      "key_points": [
+        "Derived from a bacterial adaptive immune system",
+        "A guide RNA targets a specific DNA sequence",
+        "The Cas9 enzyme cuts the DNA at that site",
+        "Cell repair pathways then disable a gene or insert a new sequence",
+        "Applications include research knockouts, gene therapy, and crop engineering"
+      ]
+    },
+    {
+      "id": "gdpr-provisions",
+      "question": "What are the main provisions of the EU General Data Protection Regulation?",
+      "reference_answer": "The GDPR, which took effect in 2018, governs how personal data of people in the EU may be processed. It requires a lawful basis for processing, such as consent or legitimate interest, and obliges organisations to limit collection to what is necessary for a stated purpose. It grants individuals rights including access, rectification, erasure, and data portability, requires breach notification within 72 hours, and allows fines of up to 4 percent of global annual turnover or 20 million euros.",
+      "key_points": [
+        "Took effect in May 2018 and applies to personal data of people in the EU",
+        "Requires a lawful basis for processing such as consent",
+        "Principles of data minimisation and purpose limitation",
+        "Individual rights including access, erasure, rectification, and portability",
+        "Breach notification within 72 hours",
+        "Fines up to 4 percent of global annual turnover or 20 million euros"
+      ]
+    },
+    {
+      "id": "transformer-architecture",
+      "question": "What is the transformer architecture in machine learning and why was it significant?",
+      "reference_answer": "The transformer, introduced in the 2017 paper Attention Is All You Need, replaced recurrence with self-attention, letting every position in a sequence attend directly to every other. Because those attention computations are independent across positions, training parallelises across a sequence in a way recurrent networks could not, which made much larger models practical. It also handles long-range dependencies better than RNNs and became the basis for large language models.",
+      "key_points": [
+        "Introduced in the 2017 paper Attention Is All You Need",
+        "Uses self-attention instead of recurrence",
+        "Multi-head attention and positional encodings are core components",
+        "Parallelises training across sequence positions, unlike RNNs",
+        "Handles long-range dependencies well and underpins modern large language models"
+      ]
+    },
+    {
+      "id": "quantum-entanglement",
+      "question": "What is quantum entanglement?",
+      "reference_answer": "Entanglement is a quantum phenomenon in which two or more particles share a single joint quantum state, so their properties are correlated and neither particle has a definite independent value for those properties. Measuring one immediately determines the corresponding outcome for the other, with correlations stronger than any classical model permits, as Bell inequality experiments have confirmed. It cannot be used to send information faster than light, but it underpins quantum cryptography and quantum computing.",
+      "key_points": [
+        "Particles share a joint quantum state and cannot be described independently",
+        "Measurement outcomes are correlated regardless of separation",
+        "Correlations exceed what classical local theories allow, confirmed by Bell tests",
+        "Does not permit faster-than-light communication",
+        "Relevant to quantum computing and quantum cryptography"
+      ]
+    },
+    {
+      "id": "soviet-collapse",
+      "question": "What caused the collapse of the Soviet Union?",
+      "reference_answer": "The Soviet Union dissolved in December 1991 after a long economic stagnation made worse by heavy military spending and dependence on oil revenue that fell in the 1980s. Gorbachev's reforms, perestroika and glasnost, loosened central economic and political control without stabilising either, while openness allowed long-suppressed nationalist movements in the republics to press for independence. The failed August 1991 coup destroyed what authority remained at the centre, and the republics declared independence.",
+      "key_points": [
+        "Long-running economic stagnation and inefficiency of central planning",
+        "Heavy military spending and reliance on oil revenues that declined",
+        "Gorbachev's perestroika and glasnost reforms weakened central control",
+        "Nationalist and independence movements in the constituent republics",
+        "The failed August 1991 coup attempt",
+        "Formal dissolution in December 1991"
+      ]
+    },
+    {
+      "id": "tcp-vs-udp",
+      "question": "What is the difference between TCP and UDP?",
+      "reference_answer": "TCP is connection-oriented and reliable: it establishes a connection with a handshake, numbers and acknowledges segments, retransmits what is lost, delivers data in order, and applies flow and congestion control. UDP is connectionless and does none of that, simply sending datagrams with no delivery or ordering guarantee. TCP suits transfers where correctness matters, such as web pages and file transfer, while UDP suits latency-sensitive traffic like live video, voice, and DNS queries.",
+      "key_points": [
+        "TCP is connection-oriented; UDP is connectionless",
+        "TCP guarantees delivery through acknowledgements and retransmission",
+        "TCP preserves ordering; UDP does not",
+        "TCP provides flow and congestion control",
+        "UDP has lower overhead and latency",
+        "TCP suits web and file transfer; UDP suits streaming, voice, and DNS"
+      ]
+    },
+    {
+      "id": "inflation-causes",
+      "question": "What is inflation and what are its main causes?",
+      "reference_answer": "Inflation is a sustained rise in the general price level, which reduces the purchasing power of money. Demand-pull inflation occurs when spending outpaces what the economy can supply, while cost-push inflation follows rises in input costs such as energy or wages, or supply disruptions. Sustained inflation is also driven by excessive growth in the money supply relative to output, and by expectations, since firms and workers that expect rising prices set prices and wages accordingly.",
+      "key_points": [
+        "A sustained increase in the general price level",
+        "Reduces the purchasing power of money",
+        "Demand-pull inflation from demand exceeding supply capacity",
+        "Cost-push inflation from higher input costs or supply shocks",
+        "Excessive money supply growth relative to output",
+        "Inflation expectations becoming self-reinforcing"
+      ]
+    },
+    {
+      "id": "solar-pv",
+      "question": "How does solar photovoltaic technology convert sunlight into electricity?",
+      "reference_answer": "A photovoltaic cell is a semiconductor device, usually silicon, with a junction between p-type and n-type layers. Photons with enough energy knock electrons loose from atoms in the semiconductor, and the electric field at the junction pushes those freed electrons in one direction, creating a direct current. An inverter then converts that DC output into the alternating current used by the grid and most appliances.",
+      "key_points": [
+        "Uses semiconductor material, typically silicon",
+        "A p-n junction creates an internal electric field",
+        "Photons excite electrons into a conducting state, the photovoltaic effect",
+        "The junction's field separates charges to produce direct current",
+        "An inverter converts DC to AC for grid use"
+      ]
+    },
+    {
+      "id": "jwst-purpose",
+      "question": "What is the James Webb Space Telescope designed to study?",
+      "reference_answer": "Webb is an infrared space observatory launched in December 2021 and stationed near the Sun-Earth L2 point. Observing in the infrared lets it see through dust and detect highly redshifted light, so its goals include the first galaxies formed after the Big Bang, the formation of stars and planetary systems inside dust clouds, and the atmospheres of exoplanets. Its roughly 6.5 metre segmented mirror gives it far more light-gathering power than Hubble at those wavelengths.",
+      "key_points": [
+        "Launched in December 2021",
+        "Observes primarily in the infrared",
+        "Operates near the Sun-Earth L2 point",
+        "Studies the earliest galaxies and highly redshifted light",
+        "Studies star and planet formation within dust clouds",
+        "Characterises exoplanet atmospheres",
+        "Has a segmented primary mirror about 6.5 metres across"
+      ]
+    },
+    {
+      "id": "sleep-deprivation",
+      "question": "What are the health effects of long-term sleep deprivation?",
+      "reference_answer": "Chronic insufficient sleep impairs attention, working memory, and reaction time, and raises accident risk. Over longer periods it is associated with higher risk of cardiovascular disease and hypertension, impaired glucose regulation and type 2 diabetes, weight gain through disrupted appetite hormones, and weakened immune response. It also contributes to mood disorders including depression and anxiety.",
+      "key_points": [
+        "Impaired attention, memory, and reaction time",
+        "Increased risk of cardiovascular disease and high blood pressure",
+        "Impaired glucose metabolism and higher type 2 diabetes risk",
+        "Weight gain and appetite hormone disruption",
+        "Weakened immune function",
+        "Higher risk of depression and anxiety"
+      ]
+    },
+    {
+      "id": "kubernetes-purpose",
+      "question": "What is Kubernetes and what problem does it solve?",
+      "reference_answer": "Kubernetes is an open source container orchestration platform, originally developed at Google. It solves the problem of running containerised applications across a fleet of machines: it schedules containers onto nodes, restarts them when they fail, scales replicas up and down, and handles service discovery and load balancing between them. It also manages rolling updates and rollbacks, so deployments can change without downtime, using a declarative model where you specify desired state and the control plane reconciles toward it.",
+      "key_points": [
+        "An open source container orchestration system, originating at Google",
+        "Schedules containers across a cluster of machines",
+        "Self-healing: restarts or replaces failed containers",
+        "Horizontal scaling of replicas",
+        "Service discovery and load balancing",
+        "Rolling updates and rollbacks",
+        "Declarative desired-state model reconciled by a control plane"
+      ]
+    },
+    {
+      "id": "overfitting-underfitting",
+      "question": "What is the difference between overfitting and underfitting in machine learning?",
+      "reference_answer": "An overfitted model has learned the training data too closely, including its noise, so it performs well on training data and poorly on unseen data. An underfitted model is too simple to capture the real structure, so it performs poorly on both. Overfitting corresponds to high variance and is addressed with regularisation, more data, or a simpler model; underfitting corresponds to high bias and is addressed with a more expressive model or better features.",
+      "key_points": [
+        "Overfitting: good training performance, poor generalisation to unseen data",
+        "Overfitting means the model has learned noise in the training set",
+        "Underfitting: poor performance on both training and test data",
+        "Underfitting means the model is too simple for the underlying structure",
+        "Overfitting is high variance; underfitting is high bias",
+        "Remedies include regularisation, more data, or changing model complexity"
+      ]
+    },
+    {
+      "id": "federal-reserve-role",
+      "question": "What is the role of the Federal Reserve in the US economy?",
+      "reference_answer": "The Federal Reserve is the central bank of the United States, charged by Congress with a dual mandate of maximum employment and stable prices. It conducts monetary policy mainly by setting a target for the federal funds rate and through open market operations that adjust the supply of reserves. It also supervises and regulates banks, acts as lender of last resort to preserve financial stability, and operates core parts of the payment system.",
+      "key_points": [
+        "The central bank of the United States",
+        "Dual mandate of maximum employment and price stability",
+        "Sets the federal funds rate target",
+        "Uses open market operations to implement policy",
+        "Supervises and regulates banks",
+        "Acts as lender of last resort in a crisis",
+        "Supports the payment and clearing system"
+      ]
+    }
+  ]
+}

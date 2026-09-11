@@ -24,6 +24,7 @@ dev = [
 evidence-agent = "evidence_agent.baseline:main"
 evidence-agent-search = "evidence_agent.search_baseline:main"
 evidence-agent-graph = "evidence_agent.run_graph:main"
+evidence-agent-eval = "evidence_agent.evaluation.harness:main"
 
 [build-system]
 requires = ["setuptools>=68"]
@@ -31,6 +32,9 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+markers = ["network: hits the real network, deselect with -m 'not network'"]
 
 [tool.ruff]
 line-length = 100

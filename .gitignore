@@ -23,7 +23,8 @@ htmlcov/
 
 .DS_Store
 
-evals/results/*.json
-!evals/results/.gitkeep
+# Eval results are committed on purpose: the measured numbers are the point of
+# this repo, not a build artifact.
 
 *.log
+*.sqlite
