@@ -68,3 +68,52 @@ its own right, not noise to be cleaned up before reporting.
 - **Coverage rewards matching a fixed answer.** An agent that surfaces a
   correct and important point absent from the key point list gets no credit
   for it.
+
+## Running it, and comparing two variants
+
+The harness scores one build of the agent at a time. `--variant full` includes
+the credibility node, `--variant no-credibility` drops it, which is the pair
+worth comparing: the credibility node costs an extra model call per
+sub-question, so it should have to show that it buys something.
+
+```
+evidence-agent-eval --variant no-credibility --out evals/results/eval-no-credibility.json
+evidence-agent-eval --variant full           --out evals/results/eval-full.json
+evidence-agent-eval-compare evals/results/eval-no-credibility.json evals/results/eval-full.json
+```
+
+The compare step writes `evals/comparison.md`.
+
+## Why the comparison is paired, with an interval
+
+Reporting two aggregate coverage numbers side by side invites a conclusion this
+sample cannot support. Both runs answer the same 18 questions, and those
+questions differ from each other far more than the two variants do, so the
+comparison is done per question and the mean paired difference carries a
+bootstrap 95 percent confidence interval.
+
+When that interval includes zero the report says so and names no winner. Three
+distinct outcomes are kept apart on purpose:
+
+- **Separated**: the interval excludes zero, so the difference is larger than
+  the question-to-question noise here.
+- **Inconclusive**: the interval spans zero. The sample cannot separate the
+  variants. This is a real finding about the experiment's resolution, not a
+  gap to be filled by quoting the raw difference anyway.
+- **Identical**: the two runs scored every shared question the same. A measured
+  null result, which is not the same claim as inconclusive.
+
+## Status of the measured numbers
+
+The harness, the metrics, and the comparison are implemented and tested. The
+numbers themselves have not been produced: every question in a real run needs
+model calls for planning, synthesis, credibility scoring, and both judges, and
+that requires an `ANTHROPIC_API_KEY` which the machine this was developed on
+does not have. A run of both variants over all 18 questions is roughly 200
+model calls in total.
+
+No placeholder or illustrative figures are committed anywhere in this repo. For
+a project whose argument is that portfolio agents skip honest measurement,
+inventing the measurement would be the one unrecoverable mistake. `evals/`
+holds the question set and the tooling; it will hold `comparison.md` and the
+two result files once the runs happen.

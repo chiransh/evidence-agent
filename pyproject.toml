@@ -25,6 +25,7 @@ evidence-agent = "evidence_agent.baseline:main"
 evidence-agent-search = "evidence_agent.search_baseline:main"
 evidence-agent-graph = "evidence_agent.run_graph:main"
 evidence-agent-eval = "evidence_agent.evaluation.harness:main"
+evidence-agent-eval-compare = "evidence_agent.evaluation.compare:main"
 
 [build-system]
 requires = ["setuptools>=68"]
