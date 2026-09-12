@@ -15,17 +15,17 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+ui = [
+    "streamlit>=1.36",
+]
 dev = [
+    "evidence-agent[ui]",
     "pytest>=8.0",
     "ruff>=0.6",
 ]
 
 [project.scripts]
-evidence-agent = "evidence_agent.baseline:main"
-evidence-agent-search = "evidence_agent.search_baseline:main"
-evidence-agent-graph = "evidence_agent.run_graph:main"
-evidence-agent-eval = "evidence_agent.evaluation.harness:main"
-evidence-agent-eval-compare = "evidence_agent.evaluation.compare:main"
+evidence-agent = "evidence_agent.cli:main"
 
 [build-system]
 requires = ["setuptools>=68"]

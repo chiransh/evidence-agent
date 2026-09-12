@@ -158,7 +158,7 @@ def load_dataset(path: Path = DATASET_PATH) -> list[dict]:
     return json.loads(path.read_text())["questions"]
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Score the agent against the eval question set.")
     parser.add_argument("--dataset", default=str(DATASET_PATH))
     parser.add_argument("--out", help="Where to write the results JSON.")
@@ -169,7 +169,7 @@ def main() -> None:
         default="full",
         help="Which build of the agent to score.",
     )
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     questions = load_dataset(Path(args.dataset))
     if args.limit:

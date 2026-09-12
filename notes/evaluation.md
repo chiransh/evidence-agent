@@ -77,9 +77,9 @@ worth comparing: the credibility node costs an extra model call per
 sub-question, so it should have to show that it buys something.
 
 ```
-evidence-agent-eval --variant no-credibility --out evals/results/eval-no-credibility.json
-evidence-agent-eval --variant full           --out evals/results/eval-full.json
-evidence-agent-eval-compare evals/results/eval-no-credibility.json evals/results/eval-full.json
+evidence-agent eval --variant no-credibility --out evals/results/eval-no-credibility.json
+evidence-agent eval --variant full           --out evals/results/eval-full.json
+evidence-agent compare evals/results/eval-no-credibility.json evals/results/eval-full.json
 ```
 
 The compare step writes `evals/comparison.md`.

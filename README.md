@@ -11,15 +11,38 @@ Most LLM research agents produce fluent answers with unverifiable or fabricated 
 Flow (LangGraph orchestration):
 
 ```
-Question -> Planner -> Searcher -> Synthesizer -> Writer -> Report (with inline citations)
+Question -> Planner -> Searcher -> Credibility -> Synthesizer -> Writer -> Report
 ```
 
 - **Planner**: decomposes the question into sub-questions.
 - **Searcher**: runs each sub-question against a pluggable search backend.
-- **Synthesizer**: composes findings into a coherent set of claims, each traceable to a source.
-- **Writer**: renders a final report with inline `[1][2]` citations and a sources list.
+- **Credibility**: scores each source on domain reputation and judged relevance, then reorders. See [notes/credibility.md](notes/credibility.md).
+- **Synthesizer**: composes findings into claims, each traceable to a source, and drops any citation whose URL was not actually retrieved.
+- **Writer**: renders the report with inline `[1][2]` citations and a sources list.
 
-Cross-cutting concerns: credibility scoring, checkpointing, typed errors/retries, circuit breakers.
+Cross-cutting: typed errors that separate retryable from not, per-node retries, and SQLite checkpointing so a run that dies partway resumes instead of re-paying for earlier model calls.
+
+## Usage
+
+```bash
+pip install -e ".[dev]"
+export ANTHROPIC_API_KEY=...   # web search works keyless at low rate limits
+
+evidence-agent research "What caused the 2008 global financial crisis?"
+evidence-agent research "..." --no-credibility        # the variant the eval compares against
+evidence-agent research "..." --checkpoint-db runs.sqlite --thread-id q1   # resumable
+
+evidence-agent ask "..."       # one model call, no tools: the floor to beat
+evidence-agent search "..."    # search then summarize, no planning
+```
+
+Demo UI:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+It shows the report next to what was retrieved, with sources cited and sources merely retrieved distinguished, because the gap between those two is the most useful thing to see when judging one of these.
 
 ## Engineering decisions
 

@@ -219,14 +219,14 @@ def comparison_md(result: dict, name_a: str, name_b: str) -> str:
     return "\n".join(lines) + "\n"
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Compare two eval result files.")
     parser.add_argument("run_a", help="Baseline results JSON.")
     parser.add_argument("run_b", help="Results JSON to compare against it.")
     parser.add_argument("--name-a", default=None)
     parser.add_argument("--name-b", default=None)
     parser.add_argument("--out", default=str(DEFAULT_OUT))
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     run_a, run_b = load_run(Path(args.run_a)), load_run(Path(args.run_b))
     name_a = args.name_a or run_a.get("variant", Path(args.run_a).stem)

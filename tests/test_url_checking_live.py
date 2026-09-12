@@ -16,14 +16,25 @@ from evidence_agent.evaluation.metrics import check_url, check_urls
 pytestmark = pytest.mark.network
 
 
+def _skip_if_offline(check):
+    """An `unreachable` verdict here means this machine could not get out, which
+    says nothing about whether the metric works. Skip rather than fail, so a
+    dropped connection does not look like a code defect. A wrong verdict on a
+    request that did complete still fails."""
+    if check.verdict == "unreachable":
+        pytest.skip(f"no network access to {check.url}")
+
+
 def test_real_page_reads_as_live():
     check = check_url("https://en.wikipedia.org/wiki/Paris")
+    _skip_if_offline(check)
     assert check.verdict == "live"
     assert check.status == 200
 
 
 def test_missing_page_on_a_real_host_reads_as_dead():
     check = check_url("https://en.wikipedia.org/wiki/This_Page_Does_Not_Exist_Evidence_Agent_Test")
+    _skip_if_offline(check)
     assert check.verdict == "dead"
     assert check.status == 404
 
