@@ -31,6 +31,7 @@ def source_rows(search_results: dict[str, list[SearchResultItem]]) -> list[dict]
                     "url": item.url,
                     "title": item.title,
                     "credibility": item.credibility_score,
+                    "backend": item.backend,
                     "sub_questions": [],
                 },
             )
@@ -69,8 +70,15 @@ def run_summary(result: dict) -> dict:
     findings = result.get("findings", [])
     unique_sources = {item.url for results in search_results.values() for item in results}
 
+    backends = {
+        item.backend for results in search_results.values() for item in results if item.backend
+    }
+
     return {
         "sub_questions": len(result.get("sub_questions", [])),
+        # Surfaced because a report built partly from the fallback is a different
+        # thing from one built on the primary search, and should say so.
+        "used_fallback": "wikipedia" in backends,
         "sources_retrieved": len(unique_sources),
         "sources_cited": len({f.source_url for f in findings}),
         "findings": len(findings),

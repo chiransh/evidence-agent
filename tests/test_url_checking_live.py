@@ -49,3 +49,19 @@ def test_repeated_urls_are_only_fetched_once():
     urls = ["https://en.wikipedia.org/wiki/Paris"] * 3
     checked = check_urls(urls)
     assert len(checked) == 1
+
+
+def test_wikipedia_fallback_returns_real_ranked_results():
+    from evidence_agent.exceptions import TransientError
+    from evidence_agent.search import WikipediaSearchBackend
+
+    try:
+        results = WikipediaSearchBackend().search("2008 financial crisis", max_results=3)
+    except TransientError as exc:
+        pytest.skip(f"no network access to Wikipedia: {exc}")
+
+    assert 1 <= len(results) <= 3
+    assert all(r.backend == "wikipedia" for r in results)
+    assert all(r.url.startswith("https://en.wikipedia.org/wiki/") for r in results)
+    assert all(r.snippet and "<" not in r.snippet for r in results)
+    assert any("financial crisis" in r.title.lower() for r in results)

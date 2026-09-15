@@ -6,6 +6,8 @@ class SearchResultItem(BaseModel):
     url: str
     snippet: str
     credibility_score: float | None = None
+    # Which search backend returned this, so fallback sources are visible downstream.
+    backend: str | None = None
 
 
 class Finding(BaseModel):

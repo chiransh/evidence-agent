@@ -21,14 +21,15 @@ flowchart LR
     SY -->|claims + source URLs| W[Writer]
     W --> R([Report with inline citations])
 
-    S -.->|Tavily behind a<br/>SearchBackend protocol| EXT[(Web search)]
+    S -.->|sub-questions in parallel| TV[(Tavily)]
+    TV -.->|rate limited or failing| WK[(Wikipedia fallback)]
 ```
 
 | Node | Does | Model call |
 |---|---|---|
 | **Planner** | Splits the question into 2 to 4 searchable sub-questions | Yes, structured output |
-| **Searcher** | Runs each sub-question through the search backend | No |
-| **Credibility** | Scores each source on domain reputation and judged relevance, then reorders | Yes, one per sub-question |
+| **Searcher** | Runs all sub-questions in parallel, falling back to Wikipedia if Tavily cannot answer | No |
+| **Credibility** | Scores each source on domain reputation and judged relevance, then reorders | Yes, one per sub-question, in parallel |
 | **Synthesizer** | Turns results into claims, each tied to a source, and drops any citation whose URL was not retrieved | Yes, structured output |
 | **Writer** | Renders the report, numbering citations by first appearance | No, deliberately |
 
@@ -96,9 +97,11 @@ evidence-agent compare evals/results/eval-no-credibility.json evals/results/eval
 
 **Structured outputs instead of parsing JSON out of prose.** Planner, Synthesizer, and both judges use Pydantic schemas, so a malformed response fails at the boundary rather than halfway through the pipeline on a `KeyError`.
 
-**Search sits behind a protocol with one implementation.** `SearchBackend` has a single method, and `TavilySearchBackend` implements it. Swapping in Brave or SerpAPI means adding a class, not touching the Searcher. Tavily also works keyless at low rate limits, which means the retrieval half of this repo can be run and tested with no signup at all.
+**Search falls back to Wikipedia, but never on a bad key.** `SearchBackend` is a one-method protocol with a Tavily implementation and a Wikipedia one, composed by `FallbackSearchBackend`. The fallback exists because keyless Tavily runs out quickly: its hourly limit was hit during development of this very feature, and the same query then came back from Wikipedia without the caller doing anything. It falls back on a rate limit, an upstream error, or an empty result, and deliberately not on a `ConfigurationError`, since quietly serving Wikipedia on every query would hide a broken key and degrade every report without anyone noticing. Every result records which backend produced it, and the demo UI warns when a report leans on the fallback, because a report built from encyclopedia intros is a different thing from one built on web search and should say so. Wikipedia results use the plain-text opening of each article rather than the search snippet, which is an HTML fragment too short to judge a claim against.
 
-**Judges and backends are injected.** The credibility node takes a relevance function, the harness takes URL-checker, support, and coverage functions, and the searcher takes a backend. This is not abstraction for its own sake: it is what makes the scoring logic, the sorting logic, and the aggregation logic testable without a key. 58 tests run in about two seconds, and `-m "not network"` skips the four that need the internet.
+**Sub-questions are searched and judged in parallel.** The searcher and the credibility node each make one call per sub-question, and the calls are independent. Four fresh sub-questions took a median 1.71 seconds in sequence and 0.37 seconds in parallel over five alternating trials. Order and failure behaviour are unchanged: results come back in the planner's order, and a rate limit still raises the `TransientError` the graph's retry policy keys on. The tests prove the calls overlap with a barrier that only releases when every call is in flight at once, rather than with timings, so they cannot pass by luck on a fast machine. Workers are capped at four, because the upstream APIs limit per key and more threads mostly buy more rate-limit errors. Each thread gets its own Tavily client, since the client shares one `requests.Session` and `requests` does not promise a session is safe across threads.
+
+**Judges and backends are injected.** The credibility node takes a relevance function, the harness takes URL-checker, support, and coverage functions, and the searcher takes a backend. This is not abstraction for its own sake: it is what makes the scoring logic, the sorting logic, and the aggregation logic testable without a key. 78 tests run in a few seconds, and `-m "not network"` skips the five that need the internet.
 
 ## Evaluation
 
@@ -151,7 +154,7 @@ Two bugs found while building this are worth recording, since both were the kind
 - **A bigger question set, and a harder one.** 18 stable, well-documented questions cannot separate variants that differ slightly. Questions with contested or thinly sourced answers are where a citation-checking agent earns its keep.
 - **Support checked against page content, not the snippet.** The judge currently sees the search result snippet. A claim can be supported by a page whose snippet does not show it, so the honest version fetches and chunks the page.
 - **Cost and token accounting per run.** The credibility node costs a model call per sub-question and should have to justify that against measured gain, which requires the spend on the same axis as the score.
-- **Concurrency.** Sub-question searches and per-sub-question credibility calls are independent and run sequentially today.
+- **A second primary, not only a fallback.** Wikipedia keeps a run alive but is a narrow source. A paid second web search provider behind the same protocol would keep quality up when the first is unavailable, rather than trading it for availability.
 
 ## Repo layout
 
@@ -166,7 +169,8 @@ src/evidence_agent/
   writer.py           deterministic report rendering
   exceptions.py       retryable vs not
   llm.py              provider error translation in one place
-  search.py           SearchBackend protocol + Tavily
+  search.py           SearchBackend protocol, Tavily, Wikipedia, fallback
+  concurrency.py      parallel calls that keep order and typed failures
   evaluation/         harness, metrics, paired comparison
   ui/render.py        testable presentation helpers
 evals/dataset.json    18 questions with reference answers and key points

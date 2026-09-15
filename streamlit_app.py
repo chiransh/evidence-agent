@@ -56,6 +56,11 @@ if st.button("Research", type="primary", disabled=not question.strip()):
         st.stop()
 
     summary = run_summary(result)
+    if summary["used_fallback"]:
+        st.warning(
+            "Primary search was unavailable for at least one sub-question, so some sources "
+            "come from the Wikipedia fallback. Each source below is labelled with where it came from."
+        )
     columns = st.columns(5)
     columns[0].metric("Sub-questions", summary["sub_questions"])
     columns[1].metric("Sources found", summary["sources_retrieved"])
@@ -83,6 +88,7 @@ if st.button("Research", type="primary", disabled=not question.strip()):
                 st.caption(row["url"])
                 st.caption(
                     f"credibility {score_text}"
+                    + (f" | via {row['backend']}" if row["backend"] else "")
                     + ("" if cited else " | retrieved but not cited")
                 )
 

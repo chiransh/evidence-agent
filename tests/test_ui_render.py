@@ -78,8 +78,29 @@ def test_summary_handles_an_empty_result():
     summary = run_summary({})
     assert summary == {
         "sub_questions": 0,
+        "used_fallback": False,
         "sources_retrieved": 0,
         "sources_cited": 0,
         "findings": 0,
         "words": 0,
     }
+
+
+def test_summary_flags_a_report_that_used_the_fallback():
+    result = {
+        "search_results": {
+            "sq1": [SearchResultItem(title="t", url="https://a", snippet="s", backend="tavily")],
+            "sq2": [SearchResultItem(title="t", url="https://b", snippet="s", backend="wikipedia")],
+        }
+    }
+    assert run_summary(result)["used_fallback"] is True
+
+
+def test_summary_does_not_flag_primary_only_results():
+    result = {"search_results": {"sq": [SearchResultItem(title="t", url="https://a", snippet="s", backend="tavily")]}}
+    assert run_summary(result)["used_fallback"] is False
+
+
+def test_source_rows_carry_the_backend():
+    rows = source_rows({"sq": [SearchResultItem(title="t", url="https://a", snippet="s", backend="wikipedia")]})
+    assert rows[0]["backend"] == "wikipedia"

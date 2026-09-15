@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 
 from pydantic import BaseModel
 
+from evidence_agent.concurrency import map_in_order
 from evidence_agent.llm import MODEL, client, model_errors
 from evidence_agent.state import ResearchState, SearchResultItem
 
@@ -80,9 +81,12 @@ RelevanceFn = Callable[[str, list[SearchResultItem]], dict[str, float]]
 
 
 def credibility_node(state: ResearchState, relevance_fn: RelevanceFn = judge_relevance) -> dict:
-    scored_results: dict[str, list[SearchResultItem]] = {}
+    """Score each sub-question's results. One relevance judgment per
+    sub-question, made concurrently since they are independent model calls."""
+    items = list(state.search_results.items())
 
-    for sub_question, results in state.search_results.items():
+    def score(item: tuple[str, list[SearchResultItem]]) -> list[SearchResultItem]:
+        sub_question, results = item
         relevance = relevance_fn(sub_question, results)
         scored = [
             result.model_copy(
@@ -95,6 +99,11 @@ def credibility_node(state: ResearchState, relevance_fn: RelevanceFn = judge_rel
             for result in results
         ]
         scored.sort(key=lambda r: r.credibility_score, reverse=True)
-        scored_results[sub_question] = scored
+        return scored
 
-    return {"search_results": scored_results}
+    scored_lists = map_in_order(score, items)
+    return {
+        "search_results": {
+            sub_question: scored for (sub_question, _), scored in zip(items, scored_lists)
+        }
+    }
