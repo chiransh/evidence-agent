@@ -140,3 +140,74 @@ def test_dataset_is_well_formed():
         assert q["question"].strip()
         assert q["reference_answer"].strip()
         assert len(q["key_points"]) >= 3, f"{q['id']} needs enough key points to score coverage"
+
+
+# Resuming a paid run ----------------------------------------------------------
+
+
+def _fake_pipeline(calls: list[str]):
+    def pipeline(question: str) -> dict:
+        calls.append(question)
+        return {"report": "a report", "findings": [], "search_results": {}, "sub_questions": []}
+
+    return pipeline
+
+
+_SCORERS = {
+    "url_checker": lambda urls: {},
+    "support_fn": lambda pairs: [],
+    "coverage_fn": lambda report, points: {p: True for p in points},
+}
+
+
+def test_resuming_skips_questions_already_scored():
+    """A full run is around 200 model calls, so a resumed run must not pay for
+    work that already came back clean."""
+    items = [{"id": f"q{i}", "question": f"question {i}", "key_points": ["p"]} for i in range(3)]
+    calls = []
+
+    first = run_eval(items[:1], _fake_pipeline(calls), **_SCORERS)
+    assert len(calls) == 1
+
+    calls.clear()
+    second = run_eval(items, _fake_pipeline(calls), already_scored=first["per_question"], **_SCORERS)
+
+    assert calls == ["question 1", "question 2"], "the scored question should not be rerun"
+    assert second["aggregate"]["n_scored"] == 3
+
+
+def test_a_question_that_errored_is_retried_and_not_duplicated():
+    items = [{"id": "q0", "question": "question 0", "key_points": ["p"]}]
+    previous = [{"id": "q0", "question": "question 0", "error": "TransientError: rate limited"}]
+    calls = []
+
+    results = run_eval(items, _fake_pipeline(calls), already_scored=previous, **_SCORERS)
+
+    assert calls == ["question 0"]
+    assert len(results["per_question"]) == 1
+    assert "error" not in results["per_question"][0]
+
+
+def test_results_are_written_after_every_question(tmp_path):
+    """Without this, a crash on question 17 of 18 loses everything already paid for."""
+    items = [{"id": f"q{i}", "question": f"question {i}", "key_points": ["p"]} for i in range(3)]
+    snapshots = []
+
+    run_eval(items, _fake_pipeline([]), on_record=lambda records: snapshots.append(len(records)), **_SCORERS)
+
+    assert snapshots == [1, 2, 3]
+
+
+def test_resumed_records_keep_dataset_order():
+    items = [{"id": f"q{i}", "question": f"question {i}", "key_points": ["p"]} for i in range(3)]
+    previous = run_eval(items[2:], _fake_pipeline([]), **_SCORERS)["per_question"]
+
+    results = run_eval(items, _fake_pipeline([]), already_scored=previous, **_SCORERS)
+
+    assert [r["id"] for r in results["per_question"]] == ["q0", "q1", "q2"]
+
+
+def test_load_previous_tolerates_a_missing_file(tmp_path):
+    from evidence_agent.evaluation.harness import load_previous
+
+    assert load_previous(tmp_path / "nope.json") == []

@@ -1,0 +1,27 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - run: pip install -e ".[dev]"
+
+      # Network tests are deselected on purpose. They fetch real URLs to check
+      # the citation-validity metric, and from a shared CI address that means
+      # rate limits and bot blocks, which would fail the build for reasons that
+      # have nothing to do with the code. Run them locally with plain pytest.
+      - run: pytest -m "not network" -q

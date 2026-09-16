@@ -12,6 +12,7 @@ behaves on the rest, and the error list is itself a result worth keeping.
 import argparse
 import json
 import statistics
+import sys
 from pathlib import Path
 from typing import Callable
 
@@ -136,11 +137,27 @@ def run_eval(
     support_fn: SupportFn = judge_support,
     coverage_fn: CoverageFn = judge_coverage,
     progress: Callable[[str], None] | None = None,
+    already_scored: list[dict] | None = None,
+    on_record: Callable[[list[dict]], None] | None = None,
 ) -> dict:
-    records = []
+    """Score each question in turn.
+
+    A full run is around 200 model calls and costs real money, so `already_scored`
+    lets a resumed run skip questions that came back clean, and `on_record` is
+    called after every question so a crash halfway through does not throw away
+    what was already paid for.
+    """
+    records = list(already_scored or [])
+    done = {record["id"] for record in records if "error" not in record}
+
     for item in questions:
+        if item["id"] in done:
+            continue
         if progress:
             progress(item["id"])
+        # A question that previously errored is retried, and its old record
+        # replaced rather than duplicated.
+        records = [record for record in records if record["id"] != item["id"]]
         records.append(
             evaluate_one(
                 item,
@@ -150,12 +167,22 @@ def run_eval(
                 coverage_fn=coverage_fn,
             )
         )
+        if on_record:
+            on_record(records)
 
+    order = {item["id"]: position for position, item in enumerate(questions)}
+    records.sort(key=lambda record: order.get(record["id"], len(order)))
     return {"per_question": records, "aggregate": aggregate(records)}
 
 
 def load_dataset(path: Path = DATASET_PATH) -> list[dict]:
     return json.loads(path.read_text())["questions"]
+
+
+def load_previous(path: Path) -> list[dict]:
+    if not path.exists():
+        return []
+    return json.loads(path.read_text()).get("per_question", [])
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -169,6 +196,14 @@ def main(argv: list[str] | None = None) -> None:
         default="full",
         help="Which build of the agent to score.",
     )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help=(
+            "Keep questions already scored in the output file and only run the rest. "
+            "Questions that errored are retried."
+        ),
+    )
     args = parser.parse_args(argv)
 
     questions = load_dataset(Path(args.dataset))
@@ -177,16 +212,31 @@ def main(argv: list[str] | None = None) -> None:
 
     pipeline = default_pipeline(with_credibility=args.variant == "full")
 
-    import sys
-
-    results = run_eval(
-        questions, pipeline, progress=lambda qid: print(f"evaluating {qid}", file=sys.stderr)
-    )
-    results["variant"] = args.variant
-
     out_path = Path(args.out) if args.out else RESULTS_DIR / f"eval-{args.variant}.json"
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(results, indent=2))
+
+    previous = load_previous(out_path) if args.resume else []
+    if previous:
+        scored = len([r for r in previous if "error" not in r])
+        print(f"resuming: {scored} questions already scored in {out_path}", file=sys.stderr)
+
+    def save(records: list[dict]) -> None:
+        out_path.write_text(
+            json.dumps(
+                {"variant": args.variant, "per_question": records, "aggregate": aggregate(records)},
+                indent=2,
+            )
+        )
+
+    results = run_eval(
+        questions,
+        pipeline,
+        progress=lambda qid: print(f"evaluating {qid}", file=sys.stderr),
+        already_scored=previous,
+        on_record=save,
+    )
+    results["variant"] = args.variant
+    save(results["per_question"])
 
     agg = results["aggregate"]
     print(f"variant: {args.variant}")

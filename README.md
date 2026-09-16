@@ -1,5 +1,7 @@
 # evidence-agent
 
+[![tests](https://github.com/chiransh/evidence-agent/actions/workflows/tests.yml/badge.svg)](https://github.com/chiransh/evidence-agent/actions/workflows/tests.yml)
+
 A research agent that cites its sources, plus the harness that checks whether those citations hold up.
 
 The pipeline is the part most projects like this stop at. The measurement is the part that makes it worth reading: 18 held-out questions, citation URLs fetched to confirm they exist, a judge asking whether each cited source actually supports the claim made from it, and a paired comparison that says "inconclusive" when the sample cannot tell two variants apart.
@@ -101,7 +103,7 @@ evidence-agent compare evals/results/eval-no-credibility.json evals/results/eval
 
 **Sub-questions are searched and judged in parallel.** The searcher and the credibility node each make one call per sub-question, and the calls are independent. Four fresh sub-questions took a median 1.71 seconds in sequence and 0.37 seconds in parallel over five alternating trials. Order and failure behaviour are unchanged: results come back in the planner's order, and a rate limit still raises the `TransientError` the graph's retry policy keys on. The tests prove the calls overlap with a barrier that only releases when every call is in flight at once, rather than with timings, so they cannot pass by luck on a fast machine. Workers are capped at four, because the upstream APIs limit per key and more threads mostly buy more rate-limit errors. Each thread gets its own Tavily client, since the client shares one `requests.Session` and `requests` does not promise a session is safe across threads.
 
-**Judges and backends are injected.** The credibility node takes a relevance function, the harness takes URL-checker, support, and coverage functions, and the searcher takes a backend. This is not abstraction for its own sake: it is what makes the scoring logic, the sorting logic, and the aggregation logic testable without a key. 78 tests run in a few seconds, and `-m "not network"` skips the five that need the internet.
+**Judges and backends are injected.** The credibility node takes a relevance function, the harness takes URL-checker, support, and coverage functions, and the searcher takes a backend. This is not abstraction for its own sake: it is what makes the scoring logic, the sorting logic, and the aggregation logic testable without a key. 83 tests run in a few seconds, and `-m "not network"` skips the five that need the internet, which is what CI runs.
 
 ## Evaluation
 
