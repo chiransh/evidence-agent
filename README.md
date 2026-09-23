@@ -2,6 +2,8 @@
 
 [![tests](https://github.com/chiransh/evidence-agent/actions/workflows/tests.yml/badge.svg)](https://github.com/chiransh/evidence-agent/actions/workflows/tests.yml)
 
+Non-technical summary for clients: [CASE-STUDY.md](CASE-STUDY.md)
+
 A research agent that cites its sources, plus the harness that checks whether those citations hold up.
 
 The pipeline is the part most projects like this stop at. The measurement is the part that makes it worth reading: 18 held-out questions, citation URLs fetched to confirm they exist, a judge asking whether each cited source actually supports the claim made from it, and a paired comparison that says "inconclusive" when the sample cannot tell two variants apart.
