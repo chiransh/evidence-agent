@@ -14,20 +14,26 @@ import json
 import statistics
 import sys
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Sequence
 
 from evidence_agent.evaluation.metrics import (
     CoverageFn,
     SupportFn,
-    UrlCheckerFn,
+    UrlCheck,
     answer_length,
-    check_urls,
     coverage_rate,
     judge_coverage,
     judge_support,
     support_rate,
     url_check_to_dict,
     url_validity,
+)
+from evidence_agent.evaluation.pages import (
+    Evidence,
+    PageText,
+    evidence_for,
+    evidence_summary,
+    fetch_pages,
 )
 from evidence_agent.exceptions import EvidenceAgentError
 from evidence_agent.graph import build_graph
@@ -47,24 +53,56 @@ def default_pipeline(with_credibility: bool = True) -> PipelineFn:
     return run
 
 
-def _claim_source_pairs(result: dict) -> list[tuple[str, str]]:
-    """Pair each cited claim with the text of the source it cites, which is what
-    the support judge needs to see."""
+PageFetcherFn = Callable[[Sequence[str]], dict[str, PageText]]
+
+# Page fetch verdicts mapped onto citation liveness. A page that answered but is
+# not HTML still exists, so it is live for the purpose of "does this URL work",
+# even though there is no text to judge a claim against.
+_LIVENESS = {
+    "fetched": "live",
+    "unparseable": "live",
+    "blocked": "blocked",
+    "dead": "dead",
+    "unreachable": "unreachable",
+}
+
+
+def _snippets(result: dict) -> dict[str, str]:
     snippets: dict[str, str] = {}
     for results in result.get("search_results", {}).values():
         for item in results:
             snippets.setdefault(item.url, f"{item.title}\n{item.snippet}")
+    return snippets
 
+
+def claim_evidence(result: dict, pages: dict[str, PageText]) -> list[tuple[str, Evidence]]:
+    """Pair each cited claim with the text the support judge will grade it against.
+
+    Page content where the page could be fetched, the search snippet otherwise,
+    with the reason recorded either way.
+    """
+    snippets = _snippets(result)
     return [
-        (finding.claim, snippets.get(finding.source_url, ""))
+        (
+            finding.claim,
+            evidence_for(finding.claim, snippets.get(finding.source_url, ""), pages.get(finding.source_url)),
+        )
         for finding in result.get("findings", [])
     ]
+
+
+def checks_from_pages(pages: dict[str, PageText]) -> dict[str, UrlCheck]:
+    """Reuse the page fetch as the liveness check rather than requesting twice."""
+    return {
+        url: UrlCheck(url=url, status=page.status, verdict=_LIVENESS[page.verdict])
+        for url, page in pages.items()
+    }
 
 
 def evaluate_one(
     item: dict,
     pipeline: PipelineFn,
-    url_checker: UrlCheckerFn = check_urls,
+    page_fetcher: PageFetcherFn = fetch_pages,
     support_fn: SupportFn = judge_support,
     coverage_fn: CoverageFn = judge_coverage,
 ) -> dict:
@@ -80,18 +118,22 @@ def evaluate_one(
     findings = result.get("findings", [])
     cited_urls = [finding.source_url for finding in findings]
 
-    checks = url_checker(cited_urls)
+    pages = page_fetcher(cited_urls)
+    checks = checks_from_pages(pages)
     record["citations"] = {
         **url_validity([checks[url] for url in cited_urls if url in checks]),
         "checks": [url_check_to_dict(check) for check in checks.values()],
     }
 
-    pairs = _claim_source_pairs(result)
-    verdicts = support_fn(pairs)
+    evidence = claim_evidence(result, pages)
+    verdicts = support_fn([(claim, item.text) for claim, item in evidence])
     record["support"] = {
-        "n_claims": len(pairs),
+        "n_claims": len(evidence),
         "n_supported": sum(verdicts),
         "support_rate": support_rate(verdicts),
+        # What the judge was shown, so a support rate can be read next to how
+        # much of it was decided on page content rather than snippets.
+        "evidence": evidence_summary([item for _, item in evidence]),
     }
 
     covered = coverage_fn(report, item["key_points"])
@@ -122,6 +164,11 @@ def aggregate(records: list[dict]) -> dict:
         "n_errors": len(records) - len(scored),
         "mean_citation_live_rate": _mean([r["citations"]["live_rate"] for r in scored]),
         "mean_support_rate": _mean([r["support"]["support_rate"] for r in scored]),
+        # A support rate judged mostly from snippets is a weaker number than one
+        # judged from pages, so the run says which it is.
+        "mean_page_evidence_rate": _mean(
+            [r["support"]["evidence"]["page_rate"] for r in scored if "evidence" in r["support"]]
+        ),
         "mean_coverage_rate": _mean([r["coverage"]["coverage_rate"] for r in scored]),
         "mean_words": _mean([float(r["length"]["words"]) for r in scored]),
         "total_citations": sum(r["citations"]["n_citations"] for r in scored),
@@ -133,7 +180,7 @@ def aggregate(records: list[dict]) -> dict:
 def run_eval(
     questions: list[dict],
     pipeline: PipelineFn,
-    url_checker: UrlCheckerFn = check_urls,
+    page_fetcher: PageFetcherFn = fetch_pages,
     support_fn: SupportFn = judge_support,
     coverage_fn: CoverageFn = judge_coverage,
     progress: Callable[[str], None] | None = None,
@@ -162,7 +209,7 @@ def run_eval(
             evaluate_one(
                 item,
                 pipeline,
-                url_checker=url_checker,
+                page_fetcher=page_fetcher,
                 support_fn=support_fn,
                 coverage_fn=coverage_fn,
             )

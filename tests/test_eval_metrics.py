@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 
 from evidence_agent.evaluation.harness import aggregate, evaluate_one, load_dataset, run_eval
@@ -9,8 +8,21 @@ from evidence_agent.evaluation.metrics import (
     support_rate,
     url_validity,
 )
+from evidence_agent.evaluation.pages import PageText
 from evidence_agent.exceptions import ConfigurationError
 from evidence_agent.state import Finding, SearchResultItem
+
+# Long enough to count as a usable page, so evidence comes from the page rather
+# than falling back to the snippet.
+PAGE_TEXT = (
+    "Sunlight reaches Earth's atmosphere and is scattered in all directions by the gases "
+    "and particles in the air. Blue light is scattered more than other colours because it "
+    "travels in shorter, smaller waves, which is why we see a blue sky most of the time. "
+    "This is Rayleigh scattering, named after the physicist who described it, and it also "
+    "explains why the Sun looks yellow from the ground and why sunsets are red.\n\n"
+    "Closer to the horizon the sky fades to a lighter blue or white, because the light "
+    "reaching the observer has passed through more air and been scattered many times over."
+)
 
 
 def test_blocked_urls_are_excluded_from_the_rate_not_counted_as_valid():
@@ -67,7 +79,7 @@ def test_evaluate_one_scores_a_fake_pipeline_run():
     record = evaluate_one(
         item,
         pipeline,
-        url_checker=lambda urls: {u: UrlCheck(u, 200, "live") for u in urls},
+        page_fetcher=lambda urls: {u: PageText(u, 200, "fetched", PAGE_TEXT) for u in urls},
         support_fn=lambda pairs: [True] * len(pairs),
         coverage_fn=lambda report, points: {points[0]: True, points[1]: False},
     )
@@ -96,7 +108,7 @@ def test_a_failing_question_is_recorded_and_does_not_abort_the_run():
     results = run_eval(
         items,
         pipeline,
-        url_checker=lambda urls: {},
+        page_fetcher=lambda urls: {},
         support_fn=lambda pairs: [],
         coverage_fn=lambda report, points: {p: True for p in points},
     )
@@ -154,7 +166,7 @@ def _fake_pipeline(calls: list[str]):
 
 
 _SCORERS = {
-    "url_checker": lambda urls: {},
+    "page_fetcher": lambda urls: {},
     "support_fn": lambda pairs: [],
     "coverage_fn": lambda report, points: {p: True for p in points},
 }

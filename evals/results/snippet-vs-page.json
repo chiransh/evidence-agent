@@ -1,0 +1,1393 @@
+{
+  "summary": {
+    "n_questions": 18,
+    "n_key_points": 100,
+    "n_sources": 54,
+    "fetch_verdicts": {
+      "fetched": 54
+    },
+    "threshold": 0.6,
+    "locatable_in_snippet": 16,
+    "locatable_in_page": 86,
+    "locatable_only_in_page": 70,
+    "locatable_only_in_snippet": 0,
+    "locatable_in_random_passages": 19,
+    "mean_snippet_coverage": 0.28476190476190466,
+    "mean_page_coverage": 0.8008730158730156,
+    "mean_random_passage_coverage": 0.3602301587301586,
+    "mean_snippet_chars": 645.4066666666668,
+    "mean_page_evidence_chars": 2493.6566666666668,
+    "mean_random_passage_chars": 2806.4066666666668,
+    "mean_full_page_chars": 106460.87037037036
+  },
+  "per_question": [
+    {
+      "id": "supervised-vs-unsupervised",
+      "question": "What is the difference between supervised and unsupervised learning?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Self-supervised_learning",
+          "verdict": "fetched",
+          "snippet_chars": 690,
+          "page_chars": 30284
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Reinforcement_learning",
+          "verdict": "fetched",
+          "snippet_chars": 849,
+          "page_chars": 81995
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Machine_learning",
+          "verdict": "fetched",
+          "snippet_chars": 614,
+          "page_chars": 141563
+        }
+      ],
+      "key_points": [
+        {
+          "key_point": "Supervised learning uses labelled input and output pairs",
+          "snippet_coverage": 0.5714285714285714,
+          "page_coverage": 0.8571428571428571,
+          "random_passage_coverage": 0.42857142857142855,
+          "snippet_chars": 739.3333333333334,
+          "page_evidence_chars": 2299.0,
+          "random_passage_chars": 2404.0
+        },
+        {
+          "key_point": "Unsupervised learning works on unlabelled data",
+          "snippet_coverage": 0.6,
+          "page_coverage": 0.8,
+          "random_passage_coverage": 0.4,
+          "snippet_chars": 739.3333333333334,
+          "page_evidence_chars": 1678.3333333333333,
+          "random_passage_chars": 1811.3333333333333
+        },
+        {
+          "key_point": "Supervised learning predicts a target; unsupervised learning finds structure such as clusters",
+          "snippet_coverage": 0.3333333333333333,
+          "page_coverage": 0.7777777777777778,
+          "random_passage_coverage": 0.4444444444444444,
+          "snippet_chars": 739.3333333333334,
+          "page_evidence_chars": 2210.3333333333335,
+          "random_passage_chars": 2478.0
+        },
+        {
+          "key_point": "Classification and regression are supervised; clustering and dimensionality reduction are unsupervised",
+          "snippet_coverage": 0.2857142857142857,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.42857142857142855,
+          "snippet_chars": 739.3333333333334,
+          "page_evidence_chars": 1702.0,
+          "random_passage_chars": 1804.0
+        }
+      ]
+    },
+    {
+      "id": "financial-crisis-2008",
+      "question": "What caused the 2008 global financial crisis?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/2008_financial_crisis",
+          "verdict": "fetched",
+          "snippet_chars": 662,
+          "page_chars": 225668
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Global_financial_crisis_in_September_2008",
+          "verdict": "fetched",
+          "snippet_chars": 237,
+          "page_chars": 46783
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Financial_crisis",
+          "verdict": "fetched",
+          "snippet_chars": 558,
+          "page_chars": 75781
+        }
+      ],
+      "key_points": [
+        {
+          "key_point": "A US housing bubble and its collapse",
+          "snippet_coverage": 0.6666666666666666,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.0,
+          "snippet_chars": 512.6666666666666,
+          "page_evidence_chars": 2313.3333333333335,
+          "random_passage_chars": 2819.3333333333335
+        },
+        {
+          "key_point": "Subprime mortgage lending to borrowers who could not repay",
+          "snippet_coverage": 0.2857142857142857,
+          "page_coverage": 0.8571428571428571,
+          "random_passage_coverage": 0.14285714285714285,
+          "snippet_chars": 512.6666666666666,
+          "page_evidence_chars": 3152.3333333333335,
+          "random_passage_chars": 3316.6666666666665
+        },
+        {
+          "key_point": "Securitisation into mortgage-backed securities and CDOs that obscured risk",
+          "snippet_coverage": 0.14285714285714285,
+          "page_coverage": 0.5714285714285714,
+          "random_passage_coverage": 0.2857142857142857,
+          "snippet_chars": 512.6666666666666,
+          "page_evidence_chars": 3029.3333333333335,
+          "random_passage_chars": 3296.0
+        },
+        {
+          "key_point": "Credit rating agencies rated these securities too favourably",
+          "snippet_coverage": 0.14285714285714285,
+          "page_coverage": 0.5714285714285714,
+          "random_passage_coverage": 0.2857142857142857,
+          "snippet_chars": 512.6666666666666,
+          "page_evidence_chars": 2285.0,
+          "random_passage_chars": 2348.6666666666665
+        },
+        {
+          "key_point": "High leverage at banks turned losses into insolvency and a credit freeze",
+          "snippet_coverage": 0.375,
+          "page_coverage": 0.625,
+          "random_passage_coverage": 0.5,
+          "snippet_chars": 512.6666666666666,
+          "page_evidence_chars": 2823.3333333333335,
+          "random_passage_chars": 3445.0
+        }
+      ]
+    },
+    {
+      "id": "http3-vs-http2",
+      "question": "How does HTTP/3 differ from HTTP/2?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/List_of_HTTP_status_codes",
+          "verdict": "fetched",
+          "snippet_chars": 406,
+          "page_chars": 43133
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/List_of_HTTP_header_fields",
+          "verdict": "fetched",
+          "snippet_chars": 532,
+          "page_chars": 46484
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/DNS_over_HTTPS",
+          "verdict": "fetched",
+          "snippet_chars": 619,
+          "page_chars": 24098
+        }
+      ],
+      "key_points": [
+        {
+          "key_point": "HTTP/3 uses QUIC over UDP; HTTP/2 uses TCP",
+          "snippet_coverage": 0.16666666666666666,
+          "page_coverage": 0.6666666666666666,
+          "random_passage_coverage": 0.3333333333333333,
+          "snippet_chars": 541.6666666666666,
+          "page_evidence_chars": 1572.3333333333333,
+          "random_passage_chars": 1684.3333333333333
+        },
+        {
+          "key_point": "Eliminates TCP head-of-line blocking between streams",
+          "snippet_coverage": 0.14285714285714285,
+          "page_coverage": 0.42857142857142855,
+          "random_passage_coverage": 0.14285714285714285,
+          "snippet_chars": 541.6666666666666,
+          "page_evidence_chars": 1789.3333333333333,
+          "random_passage_chars": 1946.3333333333333
+        },
+        {
+          "key_point": "Faster connection establishment because TLS is integrated into the handshake",
+          "snippet_coverage": 0.14285714285714285,
+          "page_coverage": 0.42857142857142855,
+          "random_passage_coverage": 0.14285714285714285,
+          "snippet_chars": 541.6666666666666,
+          "page_evidence_chars": 1157.0,
+          "random_passage_chars": 1401.6666666666667
+        },
+        {
+          "key_point": "Supports connection migration when the network path changes",
+          "snippet_coverage": 0.0,
+          "page_coverage": 0.5,
+          "random_passage_coverage": 0.16666666666666666,
+          "snippet_chars": 541.6666666666666,
+          "page_evidence_chars": 1261.3333333333333,
+          "random_passage_chars": 1403.0
+        }
+      ]
+    },
+    {
+      "id": "paris-agreement",
+      "question": "What is the Paris Agreement and what are its main goals?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/United_States_and_the_Paris_Agreement",
+          "verdict": "fetched",
+          "snippet_chars": 798,
+          "page_chars": 130142
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Paris_Is_Burning_(film)",
+          "verdict": "fetched",
+          "snippet_chars": 675,
+          "page_chars": 43179
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/2024_United_Nations_Climate_Change_Conference",
+          "verdict": "fetched",
+          "snippet_chars": 524,
+          "page_chars": 33915
+        }
+      ],
+      "key_points": [
+        {
+          "key_point": "Adopted in 2015 under the UNFCCC",
+          "snippet_coverage": 0.25,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.0,
+          "snippet_chars": 701.6666666666666,
+          "page_evidence_chars": 2378.0,
+          "random_passage_chars": 3008.0
+        },
+        {
+          "key_point": "Goal of limiting warming to well below 2 degrees Celsius, pursuing 1.5 degrees",
+          "snippet_coverage": 0.0,
+          "page_coverage": 0.625,
+          "random_passage_coverage": 0.0,
+          "snippet_chars": 701.6666666666666,
+          "page_evidence_chars": 3004.3333333333335,
+          "random_passage_chars": 3124.6666666666665
+        },
+        {
+          "key_point": "Countries set their own nationally determined contributions",
+          "snippet_coverage": 0.0,
+          "page_coverage": 0.8333333333333334,
+          "random_passage_coverage": 0.5,
+          "snippet_chars": 701.6666666666666,
+          "page_evidence_chars": 2657.6666666666665,
+          "random_passage_chars": 2933.0
+        },
+        {
+          "key_point": "Contributions are meant to ratchet up over time",
+          "snippet_coverage": 0.2,
+          "page_coverage": 0.8,
+          "random_passage_coverage": 0.2,
+          "snippet_chars": 701.6666666666666,
+          "page_evidence_chars": 3165.0,
+          "random_passage_chars": 3576.3333333333335
+        },
+        {
+          "key_point": "Includes transparency and reporting requirements",
+          "snippet_coverage": 0.0,
+          "page_coverage": 0.5,
+          "random_passage_coverage": 0.0,
+          "snippet_chars": 701.6666666666666,
+          "page_evidence_chars": 2036.0,
+          "random_passage_chars": 2315.6666666666665
+        }
+      ]
+    },
+    {
+      "id": "mrna-vaccines",
+      "question": "How do mRNA vaccines work?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/MRNA_vaccine",
+          "verdict": "fetched",
+          "snippet_chars": 659,
+          "page_chars": 84906
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/COVID-19_vaccine",
+          "verdict": "fetched",
+          "snippet_chars": 531,
+          "page_chars": 181284
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Pfizer%E2%80%93BioNTech_COVID-19_vaccine",
+          "verdict": "fetched",
+          "snippet_chars": 471,
+          "page_chars": 207165
+        }
+      ],
+      "key_points": [
+        {
+          "key_point": "Delivers mRNA encoding a pathogen protein, often the spike protein",
+          "snippet_coverage": 0.7142857142857143,
+          "page_coverage": 0.7142857142857143,
+          "random_passage_coverage": 0.2857142857142857,
+          "snippet_chars": 574.6666666666666,
+          "page_evidence_chars": 2495.6666666666665,
+          "random_passage_chars": 2645.0
+        },
+        {
+          "key_point": "Lipid nanoparticles protect the mRNA and help it enter cells",
+          "snippet_coverage": 0.8571428571428571,
+          "page_coverage": 0.8571428571428571,
+          "random_passage_coverage": 0.2857142857142857,
+          "snippet_chars": 574.6666666666666,
+          "page_evidence_chars": 2592.6666666666665,
+          "random_passage_chars": 2815.6666666666665
+        },
+        {
+          "key_point": "Host cell ribosomes translate the mRNA into the protein",
+          "snippet_coverage": 0.5,
+          "page_coverage": 0.8333333333333334,
+          "random_passage_coverage": 0.16666666666666666,
+          "snippet_chars": 574.6666666666666,
+          "page_evidence_chars": 3185.3333333333335,
+          "random_passage_chars": 3347.0
+        },
+        {
+          "key_point": "The immune system responds to that protein, creating antibodies and memory",
+          "snippet_coverage": 0.2857142857142857,
+          "page_coverage": 0.5714285714285714,
+          "random_passage_coverage": 0.42857142857142855,
+          "snippet_chars": 574.6666666666666,
+          "page_evidence_chars": 2392.3333333333335,
+          "random_passage_chars": 2658.3333333333335
+        },
+        {
+          "key_point": "The mRNA degrades quickly and does not alter host DNA",
+          "snippet_coverage": 0.125,
+          "page_coverage": 0.75,
+          "random_passage_coverage": 0.25,
+          "snippet_chars": 574.6666666666666,
+          "page_evidence_chars": 2721.6666666666665,
+          "random_passage_chars": 3086.0
+        }
+      ]
+    },
+    {
+      "id": "crispr-cas9",
+      "question": "What is CRISPR-Cas9 and what is it used for?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/CRISPR_gene_editing",
+          "verdict": "fetched",
+          "snippet_chars": 749,
+          "page_chars": 159459
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/CRISPR",
+          "verdict": "fetched",
+          "snippet_chars": 528,
+          "page_chars": 102613
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/CRISPR_activation",
+          "verdict": "fetched",
+          "snippet_chars": 926,
+          "page_chars": 20969
+        }
+      ],
+      "key_points": [
+        {
+          "key_point": "Derived from a bacterial adaptive immune system",
+          "snippet_coverage": 0.4,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.2,
+          "snippet_chars": 749.3333333333334,
+          "page_evidence_chars": 2348.0,
+          "random_passage_chars": 2589.3333333333335
+        },
+        {
+          "key_point": "A guide RNA targets a specific DNA sequence",
+          "snippet_coverage": 0.8333333333333334,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.6666666666666666,
+          "snippet_chars": 749.3333333333334,
+          "page_evidence_chars": 3658.3333333333335,
+          "random_passage_chars": 4058.0
+        },
+        {
+          "key_point": "The Cas9 enzyme cuts the DNA at that site",
+          "snippet_coverage": 0.4,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.6,
+          "snippet_chars": 749.3333333333334,
+          "page_evidence_chars": 2689.6666666666665,
+          "random_passage_chars": 2844.6666666666665
+        },
+        {
+          "key_point": "Cell repair pathways then disable a gene or insert a new sequence",
+          "snippet_coverage": 0.3333333333333333,
+          "page_coverage": 0.8888888888888888,
+          "random_passage_coverage": 0.3333333333333333,
+          "snippet_chars": 749.3333333333334,
+          "page_evidence_chars": 3626.0,
+          "random_passage_chars": 3808.3333333333335
+        },
+        {
+          "key_point": "Applications include research knockouts, gene therapy, and crop engineering",
+          "snippet_coverage": 0.25,
+          "page_coverage": 0.75,
+          "random_passage_coverage": 0.375,
+          "snippet_chars": 749.3333333333334,
+          "page_evidence_chars": 2950.6666666666665,
+          "random_passage_chars": 3114.0
+        }
+      ]
+    },
+    {
+      "id": "gdpr-provisions",
+      "question": "What are the main provisions of the EU General Data Protection Regulation?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/General_Data_Protection_Regulation",
+          "verdict": "fetched",
+          "snippet_chars": 697,
+          "page_chars": 99033
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Artificial_Intelligence_Act",
+          "verdict": "fetched",
+          "snippet_chars": 522,
+          "page_chars": 48987
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Regulation_to_Prevent_and_Combat_Child_Sexual_Abuse",
+          "verdict": "fetched",
+          "snippet_chars": 723,
+          "page_chars": 71135
+        }
+      ],
+      "key_points": [
+        {
+          "key_point": "Took effect in May 2018 and applies to personal data of people in the EU",
+          "snippet_coverage": 0.25,
+          "page_coverage": 0.625,
+          "random_passage_coverage": 0.625,
+          "snippet_chars": 685.6666666666666,
+          "page_evidence_chars": 2858.3333333333335,
+          "random_passage_chars": 2936.6666666666665
+        },
+        {
+          "key_point": "Requires a lawful basis for processing such as consent",
+          "snippet_coverage": 0.0,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 1.0,
+          "snippet_chars": 685.6666666666666,
+          "page_evidence_chars": 2540.6666666666665,
+          "random_passage_chars": 3328.0
+        },
+        {
+          "key_point": "Principles of data minimisation and purpose limitation",
+          "snippet_coverage": 0.2,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.4,
+          "snippet_chars": 685.6666666666666,
+          "page_evidence_chars": 2627.0,
+          "random_passage_chars": 2794.0
+        },
+        {
+          "key_point": "Individual rights including access, erasure, rectification, and portability",
+          "snippet_coverage": 0.14285714285714285,
+          "page_coverage": 0.7142857142857143,
+          "random_passage_coverage": 0.2857142857142857,
+          "snippet_chars": 685.6666666666666,
+          "page_evidence_chars": 3184.6666666666665,
+          "random_passage_chars": 3340.3333333333335
+        },
+        {
+          "key_point": "Breach notification within 72 hours",
+          "snippet_coverage": 0.25,
+          "page_coverage": 0.75,
+          "random_passage_coverage": 0.0,
+          "snippet_chars": 685.6666666666666,
+          "page_evidence_chars": 1840.6666666666667,
+          "random_passage_chars": 2186.3333333333335
+        },
+        {
+          "key_point": "Fines up to 4 percent of global annual turnover or 20 million euros",
+          "snippet_coverage": 0.0,
+          "page_coverage": 0.7142857142857143,
+          "random_passage_coverage": 0.14285714285714285,
+          "snippet_chars": 685.6666666666666,
+          "page_evidence_chars": 2239.6666666666665,
+          "random_passage_chars": 2618.6666666666665
+        }
+      ]
+    },
+    {
+      "id": "transformer-architecture",
+      "question": "What is the transformer architecture in machine learning and why was it significant?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Deep_learning",
+          "verdict": "fetched",
+          "snippet_chars": 517,
+          "page_chars": 144074
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Machine_learning",
+          "verdict": "fetched",
+          "snippet_chars": 614,
+          "page_chars": 141563
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Hallucination_(artificial_intelligence)",
+          "verdict": "fetched",
+          "snippet_chars": 755,
+          "page_chars": 74018
+        }
+      ],
+      "key_points": [
+        {
+          "key_point": "Introduced in the 2017 paper Attention Is All You Need",
+          "snippet_coverage": 0.0,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.16666666666666666,
+          "snippet_chars": 652.3333333333334,
+          "page_evidence_chars": 2355.0,
+          "random_passage_chars": 2457.6666666666665
+        },
+        {
+          "key_point": "Uses self-attention instead of recurrence",
+          "snippet_coverage": 0.0,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.0,
+          "snippet_chars": 652.3333333333334,
+          "page_evidence_chars": 2291.0,
+          "random_passage_chars": 2594.6666666666665
+        },
+        {
+          "key_point": "Multi-head attention and positional encodings are core components",
+          "snippet_coverage": 0.0,
+          "page_coverage": 0.42857142857142855,
+          "random_passage_coverage": 0.0,
+          "snippet_chars": 652.3333333333334,
+          "page_evidence_chars": 2095.6666666666665,
+          "random_passage_chars": 2293.3333333333335
+        },
+        {
+          "key_point": "Parallelises training across sequence positions, unlike RNNs",
+          "snippet_coverage": 0.14285714285714285,
+          "page_coverage": 0.5714285714285714,
+          "random_passage_coverage": 0.2857142857142857,
+          "snippet_chars": 652.3333333333334,
+          "page_evidence_chars": 2809.6666666666665,
+          "random_passage_chars": 2940.3333333333335
+        },
+        {
+          "key_point": "Handles long-range dependencies well and underpins modern large language models",
+          "snippet_coverage": 0.3,
+          "page_coverage": 0.7,
+          "random_passage_coverage": 0.2,
+          "snippet_chars": 652.3333333333334,
+          "page_evidence_chars": 2421.6666666666665,
+          "random_passage_chars": 2651.0
+        }
+      ]
+    },
+    {
+      "id": "quantum-entanglement",
+      "question": "What is quantum entanglement?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Quantum_entanglement",
+          "verdict": "fetched",
+          "snippet_chars": 866,
+          "page_chars": 102752
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Quantum_information_science",
+          "verdict": "fetched",
+          "snippet_chars": 721,
+          "page_chars": 20383
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Quantum_teleportation",
+          "verdict": "fetched",
+          "snippet_chars": 571,
+          "page_chars": 89408
+        }
+      ],
+      "key_points": [
+        {
+          "key_point": "Particles share a joint quantum state and cannot be described independently",
+          "snippet_coverage": 0.75,
+          "page_coverage": 0.875,
+          "random_passage_coverage": 0.75,
+          "snippet_chars": 743.0,
+          "page_evidence_chars": 2906.6666666666665,
+          "random_passage_chars": 3161.3333333333335
+        },
+        {
+          "key_point": "Measurement outcomes are correlated regardless of separation",
+          "snippet_coverage": 0.2,
+          "page_coverage": 0.8,
+          "random_passage_coverage": 0.4,
+          "snippet_chars": 743.0,
+          "page_evidence_chars": 2839.6666666666665,
+          "random_passage_chars": 3023.0
+        },
+        {
+          "key_point": "Correlations exceed what classical local theories allow, confirmed by Bell tests",
+          "snippet_coverage": 0.1111111111111111,
+          "page_coverage": 0.6666666666666666,
+          "random_passage_coverage": 0.4444444444444444,
+          "snippet_chars": 743.0,
+          "page_evidence_chars": 3033.6666666666665,
+          "random_passage_chars": 3348.6666666666665
+        },
+        {
+          "key_point": "Does not permit faster-than-light communication",
+          "snippet_coverage": 0.2857142857142857,
+          "page_coverage": 0.8571428571428571,
+          "random_passage_coverage": 0.2857142857142857,
+          "snippet_chars": 743.0,
+          "page_evidence_chars": 2574.3333333333335,
+          "random_passage_chars": 2803.3333333333335
+        },
+        {
+          "key_point": "Relevant to quantum computing and quantum cryptography",
+          "snippet_coverage": 0.25,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.5,
+          "snippet_chars": 743.0,
+          "page_evidence_chars": 2492.3333333333335,
+          "random_passage_chars": 2806.0
+        }
+      ]
+    },
+    {
+      "id": "soviet-collapse",
+      "question": "What caused the collapse of the Soviet Union?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Dissolution_of_the_Soviet_Union",
+          "verdict": "fetched",
+          "snippet_chars": 907,
+          "page_chars": 229647
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Predictions_of_the_collapse_of_the_Soviet_Union",
+          "verdict": "fetched",
+          "snippet_chars": 798,
+          "page_chars": 62752
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Soviet_Union",
+          "verdict": "fetched",
+          "snippet_chars": 614,
+          "page_chars": 223850
+        }
+      ],
+      "key_points": [
+        {
+          "key_point": "Long-running economic stagnation and inefficiency of central planning",
+          "snippet_coverage": 0.42857142857142855,
+          "page_coverage": 0.5714285714285714,
+          "random_passage_coverage": 0.42857142857142855,
+          "snippet_chars": 804.0,
+          "page_evidence_chars": 2676.6666666666665,
+          "random_passage_chars": 2945.3333333333335
+        },
+        {
+          "key_point": "Heavy military spending and reliance on oil revenues that declined",
+          "snippet_coverage": 0.0,
+          "page_coverage": 0.42857142857142855,
+          "random_passage_coverage": 0.14285714285714285,
+          "snippet_chars": 804.0,
+          "page_evidence_chars": 3497.6666666666665,
+          "random_passage_chars": 3682.0
+        },
+        {
+          "key_point": "Gorbachev's perestroika and glasnost reforms weakened central control",
+          "snippet_coverage": 0.7142857142857143,
+          "page_coverage": 0.7142857142857143,
+          "random_passage_coverage": 0.2857142857142857,
+          "snippet_chars": 804.0,
+          "page_evidence_chars": 2696.0,
+          "random_passage_chars": 3030.3333333333335
+        },
+        {
+          "key_point": "Nationalist and independence movements in the constituent republics",
+          "snippet_coverage": 0.2,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.2,
+          "snippet_chars": 804.0,
+          "page_evidence_chars": 2796.6666666666665,
+          "random_passage_chars": 3362.0
+        },
+        {
+          "key_point": "The failed August 1991 coup attempt",
+          "snippet_coverage": 0.4,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.4,
+          "snippet_chars": 804.0,
+          "page_evidence_chars": 2671.3333333333335,
+          "random_passage_chars": 3008.6666666666665
+        },
+        {
+          "key_point": "Formal dissolution in December 1991",
+          "snippet_coverage": 0.75,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.75,
+          "snippet_chars": 804.0,
+          "page_evidence_chars": 2486.0,
+          "random_passage_chars": 2581.3333333333335
+        }
+      ]
+    },
+    {
+      "id": "tcp-vs-udp",
+      "question": "What is the difference between TCP and UDP?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/QUIC",
+          "verdict": "fetched",
+          "snippet_chars": 345,
+          "page_chars": 40243
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/User_Datagram_Protocol",
+          "verdict": "fetched",
+          "snippet_chars": 648,
+          "page_chars": 23507
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Internet_protocol_suite",
+          "verdict": "fetched",
+          "snippet_chars": 767,
+          "page_chars": 56683
+        }
+      ],
+      "key_points": [
+        {
+          "key_point": "TCP is connection-oriented; UDP is connectionless",
+          "snippet_coverage": 0.6,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.6,
+          "snippet_chars": 604.0,
+          "page_evidence_chars": 2409.3333333333335,
+          "random_passage_chars": 2571.6666666666665
+        },
+        {
+          "key_point": "TCP guarantees delivery through acknowledgements and retransmission",
+          "snippet_coverage": 0.16666666666666666,
+          "page_coverage": 0.6666666666666666,
+          "random_passage_coverage": 0.3333333333333333,
+          "snippet_chars": 604.0,
+          "page_evidence_chars": 2421.6666666666665,
+          "random_passage_chars": 2545.0
+        },
+        {
+          "key_point": "TCP preserves ordering; UDP does not",
+          "snippet_coverage": 0.5,
+          "page_coverage": 0.8333333333333334,
+          "random_passage_coverage": 0.8333333333333334,
+          "snippet_chars": 604.0,
+          "page_evidence_chars": 2593.0,
+          "random_passage_chars": 2801.0
+        },
+        {
+          "key_point": "TCP provides flow and congestion control",
+          "snippet_coverage": 0.6,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.8,
+          "snippet_chars": 604.0,
+          "page_evidence_chars": 1953.6666666666667,
+          "random_passage_chars": 2925.0
+        },
+        {
+          "key_point": "UDP has lower overhead and latency",
+          "snippet_coverage": 0.25,
+          "page_coverage": 0.75,
+          "random_passage_coverage": 0.75,
+          "snippet_chars": 604.0,
+          "page_evidence_chars": 2591.3333333333335,
+          "random_passage_chars": 2932.3333333333335
+        },
+        {
+          "key_point": "TCP suits web and file transfer; UDP suits streaming, voice, and DNS",
+          "snippet_coverage": 0.2222222222222222,
+          "page_coverage": 0.7777777777777778,
+          "random_passage_coverage": 0.2222222222222222,
+          "snippet_chars": 604.0,
+          "page_evidence_chars": 2401.0,
+          "random_passage_chars": 2627.3333333333335
+        }
+      ]
+    },
+    {
+      "id": "inflation-causes",
+      "question": "What is inflation and what are its main causes?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Inflation",
+          "verdict": "fetched",
+          "snippet_chars": 588,
+          "page_chars": 125044
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/2021%E2%80%932023_inflation_surge",
+          "verdict": "fetched",
+          "snippet_chars": 600,
+          "page_chars": 166996
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Stagflation",
+          "verdict": "fetched",
+          "snippet_chars": 709,
+          "page_chars": 59354
+        }
+      ],
+      "key_points": [
+        {
+          "key_point": "A sustained increase in the general price level",
+          "snippet_coverage": 0.8,
+          "page_coverage": 0.8,
+          "random_passage_coverage": 0.4,
+          "snippet_chars": 648.3333333333334,
+          "page_evidence_chars": 3280.0,
+          "random_passage_chars": 3356.3333333333335
+        },
+        {
+          "key_point": "Reduces the purchasing power of money",
+          "snippet_coverage": 0.75,
+          "page_coverage": 0.75,
+          "random_passage_coverage": 0.75,
+          "snippet_chars": 648.3333333333334,
+          "page_evidence_chars": 2861.0,
+          "random_passage_chars": 3286.6666666666665
+        },
+        {
+          "key_point": "Demand-pull inflation from demand exceeding supply capacity",
+          "snippet_coverage": 0.3333333333333333,
+          "page_coverage": 0.6666666666666666,
+          "random_passage_coverage": 0.5,
+          "snippet_chars": 648.3333333333334,
+          "page_evidence_chars": 2676.6666666666665,
+          "random_passage_chars": 3129.6666666666665
+        },
+        {
+          "key_point": "Cost-push inflation from higher input costs or supply shocks",
+          "snippet_coverage": 0.375,
+          "page_coverage": 0.875,
+          "random_passage_coverage": 0.75,
+          "snippet_chars": 648.3333333333334,
+          "page_evidence_chars": 3182.0,
+          "random_passage_chars": 3401.0
+        },
+        {
+          "key_point": "Excessive money supply growth relative to output",
+          "snippet_coverage": 0.3333333333333333,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.8333333333333334,
+          "snippet_chars": 648.3333333333334,
+          "page_evidence_chars": 3610.3333333333335,
+          "random_passage_chars": 4320.0
+        },
+        {
+          "key_point": "Inflation expectations becoming self-reinforcing",
+          "snippet_coverage": 0.2,
+          "page_coverage": 0.6,
+          "random_passage_coverage": 0.2,
+          "snippet_chars": 648.3333333333334,
+          "page_evidence_chars": 2949.3333333333335,
+          "random_passage_chars": 3240.0
+        }
+      ]
+    },
+    {
+      "id": "solar-pv",
+      "question": "How does solar photovoltaic technology convert sunlight into electricity?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Solar-cell_efficiency",
+          "verdict": "fetched",
+          "snippet_chars": 498,
+          "page_chars": 54592
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Photovoltaic_system",
+          "verdict": "fetched",
+          "snippet_chars": 809,
+          "page_chars": 109189
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Photovoltaics",
+          "verdict": "fetched",
+          "snippet_chars": 497,
+          "page_chars": 115958
+        }
+      ],
+      "key_points": [
+        {
+          "key_point": "Uses semiconductor material, typically silicon",
+          "snippet_coverage": 0.0,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.4,
+          "snippet_chars": 620.0,
+          "page_evidence_chars": 3369.0,
+          "random_passage_chars": 3501.3333333333335
+        },
+        {
+          "key_point": "A p-n junction creates an internal electric field",
+          "snippet_coverage": 0.2,
+          "page_coverage": 0.6,
+          "random_passage_coverage": 0.4,
+          "snippet_chars": 620.0,
+          "page_evidence_chars": 2278.6666666666665,
+          "random_passage_chars": 3209.0
+        },
+        {
+          "key_point": "Photons excite electrons into a conducting state, the photovoltaic effect",
+          "snippet_coverage": 0.2857142857142857,
+          "page_coverage": 0.7142857142857143,
+          "random_passage_coverage": 0.2857142857142857,
+          "snippet_chars": 620.0,
+          "page_evidence_chars": 2045.6666666666667,
+          "random_passage_chars": 2381.6666666666665
+        },
+        {
+          "key_point": "The junction's field separates charges to produce direct current",
+          "snippet_coverage": 0.2857142857142857,
+          "page_coverage": 0.5714285714285714,
+          "random_passage_coverage": 0.2857142857142857,
+          "snippet_chars": 620.0,
+          "page_evidence_chars": 2740.3333333333335,
+          "random_passage_chars": 3029.0
+        },
+        {
+          "key_point": "An inverter converts DC to AC for grid use",
+          "snippet_coverage": 0.5,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.5,
+          "snippet_chars": 620.0,
+          "page_evidence_chars": 3000.0,
+          "random_passage_chars": 3363.0
+        }
+      ]
+    },
+    {
+      "id": "jwst-purpose",
+      "question": "What is the James Webb Space Telescope designed to study?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/James_Webb_Space_Telescope",
+          "verdict": "fetched",
+          "snippet_chars": 778,
+          "page_chars": 190191
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Nancy_Grace_Roman_Space_Telescope",
+          "verdict": "fetched",
+          "snippet_chars": 680,
+          "page_chars": 84345
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Hubble_Space_Telescope",
+          "verdict": "fetched",
+          "snippet_chars": 586,
+          "page_chars": 196268
+        }
+      ],
+      "key_points": [
+        {
+          "key_point": "Launched in December 2021",
+          "snippet_coverage": 0.3333333333333333,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 1.0,
+          "snippet_chars": 709.3333333333334,
+          "page_evidence_chars": 2007.0,
+          "random_passage_chars": 2256.0
+        },
+        {
+          "key_point": "Observes primarily in the infrared",
+          "snippet_coverage": 0.6666666666666666,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.3333333333333333,
+          "snippet_chars": 709.3333333333334,
+          "page_evidence_chars": 2204.0,
+          "random_passage_chars": 2520.3333333333335
+        },
+        {
+          "key_point": "Operates near the Sun-Earth L2 point",
+          "snippet_coverage": 0.6,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.2,
+          "snippet_chars": 709.3333333333334,
+          "page_evidence_chars": 2333.0,
+          "random_passage_chars": 2608.3333333333335
+        },
+        {
+          "key_point": "Studies the earliest galaxies and highly redshifted light",
+          "snippet_coverage": 0.16666666666666666,
+          "page_coverage": 0.6666666666666666,
+          "random_passage_coverage": 0.0,
+          "snippet_chars": 709.3333333333334,
+          "page_evidence_chars": 2064.3333333333335,
+          "random_passage_chars": 2180.0
+        },
+        {
+          "key_point": "Studies star and planet formation within dust clouds",
+          "snippet_coverage": 0.14285714285714285,
+          "page_coverage": 0.8571428571428571,
+          "random_passage_coverage": 0.14285714285714285,
+          "snippet_chars": 709.3333333333334,
+          "page_evidence_chars": 2772.6666666666665,
+          "random_passage_chars": 3230.6666666666665
+        },
+        {
+          "key_point": "Characterises exoplanet atmospheres",
+          "snippet_coverage": 0.0,
+          "page_coverage": 0.6666666666666666,
+          "random_passage_coverage": 0.0,
+          "snippet_chars": 709.3333333333334,
+          "page_evidence_chars": 1758.0,
+          "random_passage_chars": 1871.6666666666667
+        },
+        {
+          "key_point": "Has a segmented primary mirror about 6.5 metres across",
+          "snippet_coverage": 0.3333333333333333,
+          "page_coverage": 0.5,
+          "random_passage_coverage": 0.16666666666666666,
+          "snippet_chars": 709.3333333333334,
+          "page_evidence_chars": 2710.3333333333335,
+          "random_passage_chars": 2893.0
+        }
+      ]
+    },
+    {
+      "id": "sleep-deprivation",
+      "question": "What are the health effects of long-term sleep deprivation?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Sleep_deprivation",
+          "verdict": "fetched",
+          "snippet_chars": 495,
+          "page_chars": 128979
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Sleep_debt",
+          "verdict": "fetched",
+          "snippet_chars": 431,
+          "page_chars": 17549
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Randy_Gardner_sleep_deprivation_experiment",
+          "verdict": "fetched",
+          "snippet_chars": 574,
+          "page_chars": 10898
+        }
+      ],
+      "key_points": [
+        {
+          "key_point": "Impaired attention, memory, and reaction time",
+          "snippet_coverage": 0.2,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.2,
+          "snippet_chars": 524.0,
+          "page_evidence_chars": 2769.3333333333335,
+          "random_passage_chars": 3039.3333333333335
+        },
+        {
+          "key_point": "Increased risk of cardiovascular disease and high blood pressure",
+          "snippet_coverage": 0.0,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.14285714285714285,
+          "snippet_chars": 524.0,
+          "page_evidence_chars": 2883.0,
+          "random_passage_chars": 3071.0
+        },
+        {
+          "key_point": "Impaired glucose metabolism and higher type 2 diabetes risk",
+          "snippet_coverage": 0.0,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.5714285714285714,
+          "snippet_chars": 524.0,
+          "page_evidence_chars": 2907.6666666666665,
+          "random_passage_chars": 3099.6666666666665
+        },
+        {
+          "key_point": "Weight gain and appetite hormone disruption",
+          "snippet_coverage": 0.0,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.0,
+          "snippet_chars": 524.0,
+          "page_evidence_chars": 2521.6666666666665,
+          "random_passage_chars": 2825.3333333333335
+        },
+        {
+          "key_point": "Weakened immune function",
+          "snippet_coverage": 0.0,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.3333333333333333,
+          "snippet_chars": 524.0,
+          "page_evidence_chars": 2647.0,
+          "random_passage_chars": 2764.3333333333335
+        },
+        {
+          "key_point": "Higher risk of depression and anxiety",
+          "snippet_coverage": 0.0,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.5,
+          "snippet_chars": 524.0,
+          "page_evidence_chars": 2949.3333333333335,
+          "random_passage_chars": 3114.6666666666665
+        }
+      ]
+    },
+    {
+      "id": "kubernetes-purpose",
+      "question": "What is Kubernetes and what problem does it solve?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Kubernetes",
+          "verdict": "fetched",
+          "snippet_chars": 624,
+          "page_chars": 62524
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Google_Gemini",
+          "verdict": "fetched",
+          "snippet_chars": 608,
+          "page_chars": 185610
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/EBPF",
+          "verdict": "fetched",
+          "snippet_chars": 630,
+          "page_chars": 41305
+        }
+      ],
+      "key_points": [
+        {
+          "key_point": "An open source container orchestration system, originating at Google",
+          "snippet_coverage": 0.8571428571428571,
+          "page_coverage": 0.8571428571428571,
+          "random_passage_coverage": 0.14285714285714285,
+          "snippet_chars": 630.6666666666666,
+          "page_evidence_chars": 2319.6666666666665,
+          "random_passage_chars": 2630.0
+        },
+        {
+          "key_point": "Schedules containers across a cluster of machines",
+          "snippet_coverage": 0.0,
+          "page_coverage": 0.8,
+          "random_passage_coverage": 0.2,
+          "snippet_chars": 630.6666666666666,
+          "page_evidence_chars": 2982.0,
+          "random_passage_chars": 3452.0
+        },
+        {
+          "key_point": "Self-healing: restarts or replaces failed containers",
+          "snippet_coverage": 0.0,
+          "page_coverage": 0.3333333333333333,
+          "random_passage_coverage": 0.16666666666666666,
+          "snippet_chars": 630.6666666666666,
+          "page_evidence_chars": 2132.6666666666665,
+          "random_passage_chars": 2230.0
+        },
+        {
+          "key_point": "Horizontal scaling of replicas",
+          "snippet_coverage": 0.3333333333333333,
+          "page_coverage": 0.6666666666666666,
+          "random_passage_coverage": 0.0,
+          "snippet_chars": 630.6666666666666,
+          "page_evidence_chars": 2381.6666666666665,
+          "random_passage_chars": 2622.6666666666665
+        },
+        {
+          "key_point": "Service discovery and load balancing",
+          "snippet_coverage": 0.0,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 1.0,
+          "snippet_chars": 630.6666666666666,
+          "page_evidence_chars": 2044.6666666666667,
+          "random_passage_chars": 2799.3333333333335
+        },
+        {
+          "key_point": "Rolling updates and rollbacks",
+          "snippet_coverage": 0.0,
+          "page_coverage": 0.6666666666666666,
+          "random_passage_coverage": 0.0,
+          "snippet_chars": 630.6666666666666,
+          "page_evidence_chars": 2094.6666666666665,
+          "random_passage_chars": 2401.6666666666665
+        },
+        {
+          "key_point": "Declarative desired-state model reconciled by a control plane",
+          "snippet_coverage": 0.0,
+          "page_coverage": 0.7142857142857143,
+          "random_passage_coverage": 0.14285714285714285,
+          "snippet_chars": 630.6666666666666,
+          "page_evidence_chars": 1984.0,
+          "random_passage_chars": 2214.3333333333335
+        }
+      ]
+    },
+    {
+      "id": "overfitting-underfitting",
+      "question": "What is the difference between overfitting and underfitting in machine learning?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Overfitting",
+          "verdict": "fetched",
+          "snippet_chars": 625,
+          "page_chars": 31671
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Machine_learning",
+          "verdict": "fetched",
+          "snippet_chars": 614,
+          "page_chars": 141563
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Glossary_of_artificial_intelligence",
+          "verdict": "fetched",
+          "snippet_chars": 312,
+          "page_chars": 525441
+        }
+      ],
+      "key_points": [
+        {
+          "key_point": "Overfitting: good training performance, poor generalisation to unseen data",
+          "snippet_coverage": 0.25,
+          "page_coverage": 0.75,
+          "random_passage_coverage": 0.5,
+          "snippet_chars": 538.6666666666666,
+          "page_evidence_chars": 1647.6666666666667,
+          "random_passage_chars": 2107.3333333333335
+        },
+        {
+          "key_point": "Overfitting means the model has learned noise in the training set",
+          "snippet_coverage": 0.5714285714285714,
+          "page_coverage": 0.7142857142857143,
+          "random_passage_coverage": 0.7142857142857143,
+          "snippet_chars": 538.6666666666666,
+          "page_evidence_chars": 1858.0,
+          "random_passage_chars": 2036.0
+        },
+        {
+          "key_point": "Underfitting: poor performance on both training and test data",
+          "snippet_coverage": 0.14285714285714285,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.8571428571428571,
+          "snippet_chars": 538.6666666666666,
+          "page_evidence_chars": 1738.0,
+          "random_passage_chars": 1818.6666666666667
+        },
+        {
+          "key_point": "Underfitting means the model is too simple for the underlying structure",
+          "snippet_coverage": 0.5714285714285714,
+          "page_coverage": 0.8571428571428571,
+          "random_passage_coverage": 0.42857142857142855,
+          "snippet_chars": 538.6666666666666,
+          "page_evidence_chars": 1482.6666666666667,
+          "random_passage_chars": 1629.6666666666667
+        },
+        {
+          "key_point": "Overfitting is high variance; underfitting is high bias",
+          "snippet_coverage": 0.2,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.4,
+          "snippet_chars": 538.6666666666666,
+          "page_evidence_chars": 2200.3333333333335,
+          "random_passage_chars": 5410.666666666667
+        },
+        {
+          "key_point": "Remedies include regularisation, more data, or changing model complexity",
+          "snippet_coverage": 0.375,
+          "page_coverage": 0.625,
+          "random_passage_coverage": 0.5,
+          "snippet_chars": 538.6666666666666,
+          "page_evidence_chars": 1660.6666666666667,
+          "random_passage_chars": 1822.3333333333333
+        }
+      ]
+    },
+    {
+      "id": "federal-reserve-role",
+      "question": "What is the role of the Federal Reserve in the US economy?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Federal_Reserve",
+          "verdict": "fetched",
+          "snippet_chars": 663,
+          "page_chars": 146800
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Economy_of_the_United_States",
+          "verdict": "fetched",
+          "snippet_chars": 508,
+          "page_chars": 218082
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Federal_Reserve_Bank_of_Atlanta",
+          "verdict": "fetched",
+          "snippet_chars": 655,
+          "page_chars": 29072
+        }
+      ],
+      "key_points": [
+        {
+          "key_point": "The central bank of the United States",
+          "snippet_coverage": 1.0,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 1.0,
+          "snippet_chars": 634.3333333333334,
+          "page_evidence_chars": 2670.6666666666665,
+          "random_passage_chars": 3065.6666666666665
+        },
+        {
+          "key_point": "Dual mandate of maximum employment and price stability",
+          "snippet_coverage": 0.0,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.16666666666666666,
+          "snippet_chars": 634.3333333333334,
+          "page_evidence_chars": 1957.3333333333333,
+          "random_passage_chars": 2108.0
+        },
+        {
+          "key_point": "Sets the federal funds rate target",
+          "snippet_coverage": 0.2,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.6,
+          "snippet_chars": 634.3333333333334,
+          "page_evidence_chars": 2499.3333333333335,
+          "random_passage_chars": 2911.3333333333335
+        },
+        {
+          "key_point": "Uses open market operations to implement policy",
+          "snippet_coverage": 0.16666666666666666,
+          "page_coverage": 0.8333333333333334,
+          "random_passage_coverage": 0.5,
+          "snippet_chars": 634.3333333333334,
+          "page_evidence_chars": 2078.3333333333335,
+          "random_passage_chars": 2566.6666666666665
+        },
+        {
+          "key_point": "Supervises and regulates banks",
+          "snippet_coverage": 0.3333333333333333,
+          "page_coverage": 1.0,
+          "random_passage_coverage": 0.3333333333333333,
+          "snippet_chars": 634.3333333333334,
+          "page_evidence_chars": 2482.3333333333335,
+          "random_passage_chars": 2862.0
+        },
+        {
+          "key_point": "Acts as lender of last resort in a crisis",
+          "snippet_coverage": 0.0,
+          "page_coverage": 0.6,
+          "random_passage_coverage": 0.0,
+          "snippet_chars": 634.3333333333334,
+          "page_evidence_chars": 2537.6666666666665,
+          "random_passage_chars": 2960.6666666666665
+        },
+        {
+          "key_point": "Supports the payment and clearing system",
+          "snippet_coverage": 0.25,
+          "page_coverage": 0.75,
+          "random_passage_coverage": 0.25,
+          "snippet_chars": 634.3333333333334,
+          "page_evidence_chars": 2613.6666666666665,
+          "random_passage_chars": 2922.0
+        }
+      ]
+    }
+  ]
+}

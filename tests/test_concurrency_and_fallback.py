@@ -16,6 +16,7 @@ from evidence_agent.search import (
     FallbackSearchBackend,
     SearchResult,
     TavilySearchBackend,
+    WikipediaSearchBackend,
     _clean,
 )
 from evidence_agent.searcher import searcher_node
@@ -208,3 +209,17 @@ def test_each_thread_gets_its_own_tavily_client():
 
 def test_wikipedia_text_is_cleaned_of_markup_and_entities():
     assert _clean('<span class="searchmatch">Paris</span> &amp; the  Seine\n') == "Paris & the Seine"
+
+
+@pytest.mark.network
+def test_wikipedia_fallback_returns_real_ranked_results():
+    try:
+        results = WikipediaSearchBackend().search("2008 financial crisis", max_results=3)
+    except TransientError as exc:
+        pytest.skip(f"no network access to Wikipedia: {exc}")
+
+    assert 1 <= len(results) <= 3
+    assert all(r.backend == "wikipedia" for r in results)
+    assert all(r.url.startswith("https://en.wikipedia.org/wiki/") for r in results)
+    assert all(r.snippet and "<" not in r.snippet for r in results)
+    assert any("financial crisis" in r.title.lower() for r in results)

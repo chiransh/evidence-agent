@@ -42,7 +42,7 @@ A grading harness runs the agent over 18 hand-written reference questions and
 records four things per answer:
 
 1. **Do the cited URLs exist**, checked by fetching every one of them.
-2. **Does each source support its claim**, judged against the source text.
+2. **Does each source support its claim**, judged against the cited page itself.
 3. **How much of a known good answer is covered**, against reference key points.
 4. **Answer length**, as a control, since coverage can otherwise be won by
    writing more rather than by answering better.
@@ -58,6 +58,26 @@ score.
 Comparing two versions of the agent is done question by question with a
 confidence interval, and the report says "inconclusive" when 18 questions cannot
 separate them rather than quoting a difference that is really noise.
+
+### Checking a citation against the page, not the search result
+
+The natural shortcut is to grade a claim against the one or two sentences the
+search engine shows under a result. It is also wrong in both directions: a
+snippet that happens to restate the claim passes a citation nobody read, and a
+page that makes the point three paragraphs lower fails a citation that was
+correct.
+
+So each cited page is fetched and the parts of it that bear on the claim are what
+gets graded. That is a claim about the data, so it was measured rather than
+assumed, and it needs no paid API: over 100 reference points drawn from 54 real
+pages, 86 were findable in the fetched page against 16 in the search snippet, and
+70 were findable in the page and in no snippet at all. None went the other way.
+Grading those 70 on snippets would have marked correct citations as unsupported.
+
+Because the obvious objection is that more text contains more words, the same
+test includes a control: a comparable amount of each page picked without knowing
+what was being looked for finds 19 of 100, fewer than the snippets. The targeting
+is doing the work.
 
 ## Status, stated plainly
 
@@ -84,7 +104,7 @@ be the one unrecoverable mistake.
 
 Python, LangGraph, Claude API with structured outputs, Tavily search with a
 keyless Wikipedia fallback, Pydantic, SQLite checkpointing, Streamlit demo.
-83 automated tests, run on every commit.
+107 automated tests, run on every commit.
 
 ## For engineers
 
@@ -93,3 +113,5 @@ keyless Wikipedia fallback, Pydantic, SQLite checkpointing, Streamlit demo.
   its known weaknesses, including that the judges share a model family with the
   agent.
 - [notes/credibility.md](notes/credibility.md) covers how sources are scored.
+- [evals/snippet-vs-page.md](evals/snippet-vs-page.md) is the page-against-snippet
+  measurement, generated from the run rather than written by hand.

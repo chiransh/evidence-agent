@@ -91,6 +91,16 @@ evidence-agent compare evals/results/eval-no-credibility.json evals/results/eval
 
 **Citation validity is measured as two numbers.** "Invented a URL" and "cited a real page that does not say this" are different failures with different fixes, and averaging them into one accuracy score hides which is happening. The first is handled structurally; the second needs a judge.
 
+**The support judge reads the page, not the search snippet.** A snippet is one or two sentences the search engine chose for its own purposes, and grading a claim against it measures the wrong thing in both directions: a snippet that happens to restate the claim scores a citation as supported without the page being read, while a page that states the claim three paragraphs lower scores as unsupported. So each cited page is fetched, converted to text, split into passages, and the passages with the highest lexical overlap with the claim are what the judge sees, in the page's own reading order. Selection is lexical and deterministic on purpose: having a model choose the evidence for another model to grade would let one judgment hide inside another.
+
+That is a claim about the data, so it was measured rather than asserted, using the keyless Wikipedia backend and the dataset's own key points in place of cited claims. Over 100 key points from 54 fetched pages, 86 were locatable in the selected passages against 16 in the snippet, and 70 were reachable in the page while reachable in no snippet. None went the other way. A judge shown only snippets had no way to confirm those 70, and the honest verdict on evidence it cannot see is unsupported, so the snippet version was understating support by construction.
+
+The obvious objection is length: selected passages average 2,494 characters against a snippet's 645, so they would contain more of a claim's words even if the ranking did nothing. The control for that is a slice of the same page drawn without seeing the key point, given at least as many characters as the selection it is compared with. It reaches 19 of 100, below even the snippets. The ranking is doing the work, not the character budget. Full run in [evals/snippet-vs-page.md](evals/snippet-vs-page.md).
+
+**Where the page cannot be read, the snippet is used and the run says so.** Blocked, dead, non-HTML and cookie-wall pages all fall back to the snippet, each with its reason recorded, and every result carries the share of claims judged from page content. A support rate resting mostly on snippets is a weaker measurement than one resting on pages, and that difference should be visible without rerunning anything. Non-HTML responses are never run through the text extractor: a PDF comes out as noise the judge would then grade a claim against.
+
+**One network layer, not two.** Whether a citation resolves and what it says are answered by the same fetch. An earlier version had a HEAD-first URL checker beside the page fetch, which meant requesting every citation twice to learn things one request already knew. The verdicts now map onto liveness directly, with one deliberate asymmetry: a page that answers but is not HTML counts as live, because the URL does work, even though there is no text to judge against.
+
 **A URL gets three verdicts, not two.** Plenty of real sites answer an automated request with 403 or 429. That says nothing about whether the citation was genuine, so blocked URLs are counted separately and excluded from the live-rate denominator. A question whose citations were all blocked reports no rate rather than a perfect one, and aggregates skip missing rates instead of reading them as zero. Getting this wrong would quietly reward the agent for citing sites that block crawlers.
 
 **Credibility weights relevance above domain reputation, 0.6 to 0.4.** A highly reputable source that does not address the sub-question is not useful evidence. Domain reputation is a prior, not a gate, and an unfamiliar domain gets a neutral 0.5 rather than a penalty, because unfamiliar is not the same as unreliable. The node re-sorts and drops nothing, so a low score demotes a source rather than silently removing the only evidence available. Full reasoning in [notes/credibility.md](notes/credibility.md).
@@ -105,11 +115,13 @@ evidence-agent compare evals/results/eval-no-credibility.json evals/results/eval
 
 **Sub-questions are searched and judged in parallel.** The searcher and the credibility node each make one call per sub-question, and the calls are independent. Four fresh sub-questions took a median 1.71 seconds in sequence and 0.37 seconds in parallel over five alternating trials. Order and failure behaviour are unchanged: results come back in the planner's order, and a rate limit still raises the `TransientError` the graph's retry policy keys on. The tests prove the calls overlap with a barrier that only releases when every call is in flight at once, rather than with timings, so they cannot pass by luck on a fast machine. Workers are capped at four, because the upstream APIs limit per key and more threads mostly buy more rate-limit errors. Each thread gets its own Tavily client, since the client shares one `requests.Session` and `requests` does not promise a session is safe across threads.
 
-**Judges and backends are injected.** The credibility node takes a relevance function, the harness takes URL-checker, support, and coverage functions, and the searcher takes a backend. This is not abstraction for its own sake: it is what makes the scoring logic, the sorting logic, and the aggregation logic testable without a key. 83 tests run in a few seconds, and `-m "not network"` skips the five that need the internet, which is what CI runs.
+**Judges and backends are injected.** The credibility node takes a relevance function, the harness takes URL-checker, support, and coverage functions, and the searcher takes a backend. This is not abstraction for its own sake: it is what makes the scoring logic, the sorting logic, and the aggregation logic testable without a key. 107 tests run in a few seconds, and `-m "not network"` skips the nine that need the internet, which is what CI runs.
 
 ## Evaluation
 
 What is measured, per question: whether each cited URL resolves, whether the cited source supports the claim, which of the reference answer's key points the report covers, and answer length as a control, since coverage can be bought with verbosity.
+
+The support judge grades each claim against passages selected from the cited page, falling back to the search snippet where the page cannot be read. Every run reports the share of claims judged from page content alongside the support rate, so the strength of the measurement is visible in the measurement.
 
 Variants are compared **paired by question with a bootstrap 95 percent confidence interval**, not as two aggregate means. The questions vary far more than the variants do, and an unpaired comparison throws away that both runs answered the same set. Three outcomes are kept distinct: a separation (interval excludes zero), inconclusive (interval spans zero, and the report names no winner), and identical (both runs scored every question the same, which is a measured null result rather than a failure to measure).
 
@@ -137,8 +149,10 @@ Failure modes the design anticipates, and what actually stands between them and 
 | Failure | Guard | Residual risk |
 |---|---|---|
 | Cites a URL that was never retrieved | Synthesizer drops it | None structurally; the filter is unconditional |
-| Cites a real page that does not support the claim | Nothing at runtime; measured by the eval's support judge | This is the live risk. Prompted against, not prevented |
+| Cites a real page that does not support the claim | Nothing at runtime; measured by the eval's support judge against page content | This is the live risk. Prompted against, not prevented |
 | Cites a page that has since died | Nothing at runtime; measured by fetching every URL | A report can cite a dead link and look fine |
+| Cited page cannot be fetched, so support is judged on a snippet | Falls back to the snippet, records the reason, reports the share | A support rate can rest more on snippets than it appears to unless that share is read |
+| Selected passages miss the part of the page that matters | Lexical selection, with a size-matched random control measuring what it adds | Paraphrased claims are where lexical matching is weakest |
 | Reputable but off-topic sources crowd the report | Credibility re-sorts toward relevance | Re-sorting is soft; nothing is excluded |
 | Rate limit or 5xx mid-run | Typed as transient, retried with backoff | Exhausted retries fail the run |
 | Missing credential | Typed as configuration, not retried, one clear message | None |
@@ -156,7 +170,8 @@ Two bugs found while building this are worth recording, since both were the kind
 
 - **Judge independence.** Move the support and coverage judges to a different model family, and validate a sample against human labels before trusting either number.
 - **A bigger question set, and a harder one.** 18 stable, well-documented questions cannot separate variants that differ slightly. Questions with contested or thinly sourced answers are where a citation-checking agent earns its keep.
-- **Support checked against page content, not the snippet.** The judge currently sees the search result snippet. A claim can be supported by a page whose snippet does not show it, so the honest version fetches and chunks the page.
+- **Passage selection that handles paraphrase.** Selection is lexical, which is deliberate for a measurement layer but weakest exactly where a report is strongest: a claim in the report's own words shares fewer terms with the page than a quoted one does. Embeddings would close that, at the cost of a model in the evidence path, so the honest version measures the gap first on claims it knows are supported.
+- **Fetch outcomes measured on the paid backend, not only Wikipedia.** All 54 pages in the snippet-versus-page run fetched cleanly, which says more about Wikipedia than about the web. A mix of news and vendor pages behind consent walls would fall back to snippets far more often, and that fallback rate is what decides how much the page layer is worth in practice.
 - **Cost and token accounting per run.** The credibility node costs a model call per sub-question and should have to justify that against measured gain, which requires the spend on the same axis as the score.
 - **A second primary, not only a fallback.** Wikipedia keeps a run alive but is a narrow source. A paid second web search provider behind the same protocol would keep quality up when the first is unavailable, rather than trading it for availability.
 
@@ -175,9 +190,10 @@ src/evidence_agent/
   llm.py              provider error translation in one place
   search.py           SearchBackend protocol, Tavily, Wikipedia, fallback
   concurrency.py      parallel calls that keep order and typed failures
-  evaluation/         harness, metrics, paired comparison
+  evaluation/         harness, metrics, page evidence, paired comparison
   ui/render.py        testable presentation helpers
 evals/dataset.json    18 questions with reference answers and key points
+evals/snippet-vs-page.md  measured: page passages against search snippets
 notes/                credibility and evaluation design, with limitations
 streamlit_app.py      demo UI
 ```

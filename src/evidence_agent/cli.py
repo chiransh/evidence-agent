@@ -16,6 +16,7 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 from evidence_agent.baseline import ask
 from evidence_agent.evaluation import compare as compare_module
 from evidence_agent.evaluation import harness as harness_module
+from evidence_agent.evaluation import snippet_vs_page
 from evidence_agent.exceptions import EvidenceAgentError
 from evidence_agent.graph import build_graph
 from evidence_agent.search_baseline import search_and_summarize
@@ -94,6 +95,11 @@ def build_parser() -> argparse.ArgumentParser:
     # take `eval --limit 1` as an unrecognised top-level flag.
     subparsers.add_parser("eval", add_help=False, help="Score the agent against the question set.")
     subparsers.add_parser("compare", add_help=False, help="Compare two eval result files.")
+    subparsers.add_parser(
+        "snippet-check",
+        add_help=False,
+        help="Measure whether page content reaches evidence a snippet does not.",
+    )
 
     return parser
 
@@ -102,6 +108,7 @@ def build_parser() -> argparse.ArgumentParser:
 FORWARDED = {
     "eval": harness_module.main,
     "compare": compare_module.main,
+    "snippet-check": snippet_vs_page.main,
 }
 
 

@@ -11,18 +11,19 @@ A third state matters for honesty: plenty of real sites answer an automated
 request with 403 or 429. That says nothing about whether the citation was
 genuine, so blocked URLs are reported separately and left out of the rate
 rather than silently counted as either good or bad.
+
+Whether a URL resolves is decided by the page fetch in
+evidence_agent.evaluation.pages, which has to request the page anyway to give
+the support judge something to read. This module turns those verdicts into the
+rate; it does not do its own requesting.
 """
 
 from dataclasses import asdict, dataclass
 from typing import Callable, Sequence
 
-import requests
 from pydantic import BaseModel
 
 from evidence_agent.llm import MODEL, client, model_errors
-
-USER_AGENT = "evidence-agent-eval/0.1"
-BLOCKED_STATUSES = {401, 403, 405, 406, 429}
 
 
 @dataclass
@@ -30,39 +31,6 @@ class UrlCheck:
     url: str
     status: int | None
     verdict: str  # live, dead, blocked, or unreachable
-
-
-def check_url(url: str, timeout: float = 10.0, session=None) -> UrlCheck:
-    http = session or requests
-    headers = {"User-Agent": USER_AGENT}
-
-    try:
-        response = http.head(url, timeout=timeout, allow_redirects=True, headers=headers)
-        if response.status_code >= 400:
-            # Many servers refuse HEAD but serve GET perfectly well, so a 4xx
-            # here is not yet evidence the page is missing.
-            response = http.get(
-                url, timeout=timeout, allow_redirects=True, headers=headers, stream=True
-            )
-            response.close()
-    except requests.RequestException:
-        return UrlCheck(url=url, status=None, verdict="unreachable")
-
-    status = response.status_code
-    if status < 400:
-        return UrlCheck(url=url, status=status, verdict="live")
-    if status in BLOCKED_STATUSES:
-        return UrlCheck(url=url, status=status, verdict="blocked")
-    return UrlCheck(url=url, status=status, verdict="dead")
-
-
-def check_urls(urls: Sequence[str], timeout: float = 10.0) -> dict[str, UrlCheck]:
-    checked: dict[str, UrlCheck] = {}
-    with requests.Session() as session:
-        for url in urls:
-            if url not in checked:
-                checked[url] = check_url(url, timeout=timeout, session=session)
-    return checked
 
 
 def url_validity(checks: Sequence[UrlCheck]) -> dict:
@@ -170,6 +138,5 @@ def url_check_to_dict(check: UrlCheck) -> dict:
     return asdict(check)
 
 
-UrlCheckerFn = Callable[[Sequence[str]], dict[str, UrlCheck]]
 SupportFn = Callable[[Sequence[tuple[str, str]]], list[bool]]
 CoverageFn = Callable[[str, Sequence[str]], dict[str, bool]]

@@ -10,12 +10,15 @@ the agent and records four things.
 fetched. A 2xx or 3xx counts as live, a 404 or similar counts as dead, and a
 DNS or connection failure counts as unreachable. This is checked against the
 real network, not mocked, because a checker that called everything live would
-score a fabricated citation as valid and nothing would catch it.
+score a fabricated citation as valid and nothing would catch it. It is the same
+fetch that gives the support judge its text, since requesting every citation
+twice to learn things one request already answered is waste, not rigour.
 
 **Citation validity, part two: does the source support the claim.** For each
 finding, a model judge sees the claim next to the text of the source it cites
 and decides whether that text actually supports it, as opposed to merely
-being on the same topic.
+being on the same topic. What counts as "the text of the source" is a decision
+with its own section below.
 
 Splitting these two apart matters. The Synthesizer already drops any citation
 whose URL was not in the retrieved search results, so "the agent invented a URL
@@ -32,6 +35,61 @@ rather than just noted.
 **Answer length.** Word and character count. Not a quality measure on its own,
 but a control: coverage can be bought with verbosity, and a variant that scores
 better on coverage while tripling in length has not necessarily improved.
+
+## What the support judge is shown
+
+The judge used to see the search result snippet, which is one or two sentences
+the search engine chose for its own purposes. That biases the metric in both
+directions. A snippet that happens to restate the claim scores the citation as
+supported without the page ever being read. A page that states the claim three
+paragraphs below the snippet scores as unsupported, and the report is penalised
+for a citation that was correct.
+
+So the cited page is fetched, converted to text, split into passages, and the
+passages overlapping the claim most are what the judge sees, in the page's own
+reading order rather than in score order: passages shuffled out of order read as
+a different argument from the one the page makes.
+
+Selection is lexical and deterministic, not a model call. Having a model pick
+the evidence that another model then grades would nest one judgment inside
+another, and a support rate would no longer say which of the two it measured.
+
+### Measuring whether the fetch was worth it
+
+This is a claim about the data, so `evidence-agent snippet-check` tests it
+instead of asserting it, and needs no API key: it searches with the keyless
+Wikipedia backend and uses the dataset's own key points in place of cited
+claims. Results in `evals/snippet-vs-page.md`.
+
+Over 100 key points from 54 fetched pages, 86 were locatable in the selected
+passages against 16 in the snippet, and 70 were reachable in the page while
+reachable in no snippet. None went the other way. The honest verdict on evidence
+the judge cannot see is unsupported, so the snippet version was understating
+support by construction.
+
+The objection to that is length: selected passages average 2,494 characters
+against a snippet's 645, so they would contain more of a claim's words even if
+the ranking were picking at random. The control is a slice of the same page drawn
+without seeing the key point, given at least as many characters as the selection
+it is compared with. It locates 19 of 100, below even the snippets, so the
+ranking is doing the work rather than the character budget.
+
+What this does not show: lexical coverage is not support, and a passage
+containing every word of a claim can still contradict it, which is why the
+judgment itself stays with a model. Wikipedia is also unusually fetchable, so
+the fetch outcomes here are the optimistic case.
+
+### When the page cannot be read
+
+Blocked, dead, non-HTML and cookie-wall pages fall back to the snippet, each
+with its reason recorded, and every run reports the share of claims judged from
+page content next to the support rate itself. A support rate resting mostly on
+snippets is a weaker measurement than one resting on pages, and that difference
+should be visible without rerunning anything.
+
+A non-HTML response is never run through the text extractor. A PDF put through
+it comes out as noise, and the judge would then grade a claim against the noise
+rather than against the document.
 
 ## Three states for a URL, not two
 
