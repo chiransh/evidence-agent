@@ -76,8 +76,15 @@ Grading those 70 on snippets would have marked correct citations as unsupported.
 
 Because the obvious objection is that more text contains more words, the same
 test includes a control: a comparable amount of each page picked without knowing
-what was being looked for finds 19 of 100, fewer than the snippets. The targeting
+what was being looked for finds 18 of 100, fewer than the snippets. The targeting
 is doing the work.
+
+Two more elaborate ways of choosing the relevant passage were built and tested in
+the same run, and neither was kept. On a fixed yardstick one of them was worse
+than the simple rule and the other was ahead by a margin smaller than the
+variation between runs. They are in the repository, measured and switched off,
+which is the outcome worth having: the simple thing is in production because it
+was tested, not because nobody looked.
 
 ## Status, stated plainly
 
@@ -104,7 +111,7 @@ be the one unrecoverable mistake.
 
 Python, LangGraph, Claude API with structured outputs, Tavily search with a
 keyless Wikipedia fallback, Pydantic, SQLite checkpointing, Streamlit demo.
-107 automated tests, run on every commit.
+126 automated tests, run on every commit.
 
 ## For engineers
 

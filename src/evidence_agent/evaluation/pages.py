@@ -19,6 +19,7 @@ on page content.
 """
 
 import html
+import math
 import random
 import re
 from dataclasses import dataclass, field
@@ -143,17 +144,133 @@ def content_terms(text: str) -> set[str]:
     return {word for word in _WORD.findall(text.lower()) if word not in _STOPWORDS and len(word) > 2}
 
 
-def score_passage(claim_terms: set[str], passage: str) -> float:
+def stem(word: str) -> str:
+    """One conservative suffix strip, so inflections of a word match each other.
+
+    Deliberately not a real stemmer. The failure this addresses is narrow: a
+    report writes "shorter wavelengths scatter more" and the page says "light of
+    shorter wavelength is scattered", and nothing matches. A full stemmer would
+    also merge words that mean different things, and every false merge makes a
+    passage look like evidence it is not, so the rules here strip only common
+    inflections, leave anything short alone, and are ablated rather than assumed
+    to help.
+    """
+    if word.endswith("ss"):  # class, less: stripping the s makes them inconsistent
+        return word
+    if len(word) > 4 and word.endswith("ies"):
+        return word[:-3] + "y"  # studies and study, to one form
+
+    for suffix in ("ings", "ing", "ions", "ion", "ed", "es", "ly", "s"):
+        if word.endswith(suffix) and len(word) - len(suffix) >= 4:
+            stripped = word[: -len(suffix)]
+            # labelled loses "ed" to labell, which has to meet label. Not "ss":
+            # classes would strip to class and then collapse to clas, which class
+            # itself never reaches.
+            if (
+                len(stripped) > 4
+                and stripped[-1] == stripped[-2]
+                and stripped[-1] not in "aeious"
+            ):
+                stripped = stripped[:-1]
+            return stripped
+    return word
+
+
+def term_weights(candidates: list[str]) -> dict[str, float]:
+    """Inverse document frequency over one page's own passages.
+
+    A term in every passage cannot say which passage carries the claim; a term in
+    one can. Computed per page rather than from a corpus, because the question is
+    always "which part of this page", and the page is the only corpus that is
+    certainly relevant to it.
+    """
+    n = len(candidates)
+    frequencies: dict[str, int] = {}
+    for passage in candidates:
+        for term in content_terms(passage):
+            frequencies[term] = frequencies.get(term, 0) + 1
+    return {term: math.log(n / count) + 1 for term, count in frequencies.items()}
+
+
+def score_passage(
+    claim_terms: set[str], passage: str, weights: dict[str, float] | None = None
+) -> float:
     """Share of the claim's content words the passage contains.
 
     Normalised by the claim rather than by the passage so that a long passage
     covering the claim is not penalised for its length, which is the case that
     matters: the evidence for a claim is often one sentence inside a long
-    paragraph.
+    paragraph. With `weights`, the share is weighted, so matching a term that is
+    rare on this page counts for more than matching one on every line of it.
     """
     if not claim_terms:
         return 0.0
-    return len(claim_terms & content_terms(passage)) / len(claim_terms)
+    matched = claim_terms & content_terms(passage)
+    if weights is None:
+        return len(matched) / len(claim_terms)
+
+    total = sum(weights.get(term, 1.0) for term in claim_terms)
+    return sum(weights.get(term, 1.0) for term in matched) / total if total else 0.0
+
+
+@dataclass(frozen=True)
+class Selector:
+    """How passages are ranked against a claim.
+
+    Named and parameterised so the two ideas in it can be ablated. Both raise the
+    score of everything they are applied to, including of passages picked at
+    random, so neither is worth having on the strength of a higher number alone:
+    what matters is whether the evidence for a claim ends up in front of the
+    judge more often, measured on a yardstick that does not move.
+    """
+
+    stem: bool = False
+    idf: bool = False
+
+    def terms(self, text: str) -> set[str]:
+        found = content_terms(text)
+        return {stem(term) for term in found} if self.stem else found
+
+    def _weights(self, candidates: list[str]) -> dict[str, float] | None:
+        if not self.idf:
+            return None
+        weights = term_weights(candidates)
+        if not self.stem:
+            return weights
+        # Stemmed terms need stemmed keys, and two page terms can stem together,
+        # in which case the rarer one's weight is the informative one.
+        stemmed: dict[str, float] = {}
+        for term, weight in weights.items():
+            key = stem(term)
+            stemmed[key] = max(stemmed.get(key, 0.0), weight)
+        return stemmed
+
+    def rank(self, claim: str, candidates: list[str]) -> list[int]:
+        """Candidate positions, best first, ties broken by reading order."""
+        claim_terms = self.terms(claim)
+        weights = self._weights(candidates)
+        scored = [
+            (-score_passage(claim_terms, " ".join(self.terms(passage)), weights), position)
+            for position, passage in enumerate(candidates)
+        ]
+        return [position for _, position in sorted(scored)]
+
+
+PLAIN = Selector()
+STEMMED = Selector(stem=True)
+WEIGHTED = Selector(idf=True)
+STEMMED_WEIGHTED = Selector(stem=True, idf=True)
+
+SELECTORS = {
+    "plain": PLAIN,
+    "stemmed": STEMMED,
+    "weighted": WEIGHTED,
+    "stemmed_weighted": STEMMED_WEIGHTED,
+}
+
+# Which one the harness uses. Set from the ablation in evals/snippet-vs-page.md,
+# not from which one sounds most sophisticated.
+DEFAULT_SELECTOR = "plain"
 
 
 def select_passages(
@@ -161,6 +278,7 @@ def select_passages(
     text: str,
     max_passages: int = MAX_PASSAGES,
     max_chars: int = MAX_EVIDENCE_CHARS,
+    selector: Selector | None = None,
 ) -> list[tuple[int, str]]:
     """The passages most likely to carry the claim, in the page's own order.
 
@@ -172,15 +290,12 @@ def select_passages(
     if not candidates:
         return []
 
-    claim_terms = content_terms(claim)
-    ranked = sorted(
-        enumerate(candidates),
-        key=lambda pair: (-score_passage(claim_terms, pair[1]), pair[0]),
-    )
+    order = (selector or SELECTORS[DEFAULT_SELECTOR]).rank(claim, candidates)
 
     chosen: list[tuple[int, str]] = []
     budget = max_chars
-    for position, passage in ranked[:max_passages]:
+    for position in order[:max_passages]:
+        passage = candidates[position]
         if len(passage) > budget:
             continue
         chosen.append((position, passage))

@@ -8,15 +8,28 @@ The control column is drawn from the same pages without looking at the key point
 
 | | Snippet | Page passages | Control |
 |---|---|---|---|
-| Mean characters shown | 645 | 2,494 | 2,806 |
+| Mean characters shown | 637 | 2,432 | 2,741 |
 | Mean key-point coverage | 28% | 80% | 36% |
-| Key points locatable | 16 of 100 | 86 of 100 | 19 of 100 |
+| Key points locatable | 16 of 100 | 86 of 100 | 18 of 100 |
 
-Locatable means at least 60 percent of the key point's content words appear in one passage. The mean coverage row is given so the threshold can be second-guessed. The pages themselves average 106,461 characters, so the judge is shown a small fraction of one rather than the whole thing.
+Locatable means at least 60 percent of the key point's content words appear in one passage. The mean coverage row is given so the threshold can be second-guessed. The pages themselves average 100,516 characters, so the judge is shown a small fraction of one rather than the whole thing.
 
 The page is worth fetching. 70 of 100 key points are locatable in the page and not in the snippet, against 0 the other way round. A judge shown only snippets would have had no way to confirm those points, and the honest verdict on a claim it could not see is unsupported, so the snippet version was understating citation support by construction.
 
-Selection, not length: a slice of the page of at least the same size, chosen without seeing the key point, reaches 36 percent mean coverage and locates 19 of 100 points, against 80 percent and 86 for the targeted passages. The ranking is doing the work rather than the character budget, which is the objection this control exists to answer.
+Selection, not length: a slice of the page of at least the same size, chosen without seeing the key point, reaches 36 percent mean coverage and locates 18 of 100 points, against 80 percent and 86 for the targeted passages. The ranking is doing the work rather than the character budget, which is the objection this control exists to answer.
+
+## Which ranking rule finds the evidence
+
+All four rank the same passages from the same fetch; only the notion of a match differs. Scored on the same plain yardstick as everything above, so a rule cannot win by counting its own matches. The last two columns are paired against the plain rule point by point, since a net count of one or two hides whether nothing moved or a handful moved both ways.
+
+| Ranking rule | Key points locatable | Mean coverage | Gained over plain | Lost against plain |
+|---|---|---|---|---|
+| weighted | 88 of 100 | 81% | 3 | 1 |
+| plain (in use) | 86 of 100 | 80% | 0 | 0 |
+| stemmed_weighted | 85 of 100 | 79% | 4 | 5 |
+| stemmed | 84 of 100 | 78% | 1 | 3 |
+
+weighted is 2 of 100 ahead of the plain rule, gaining 3 points and losing 1. That is too small a margin for 100 key points to call, so it is recorded rather than acted on: the rule in use changes when a larger question set separates them, not on a difference this size.
 
 ## Fetch outcomes
 
@@ -41,6 +54,7 @@ Key points one side reaches and the other does not.
 | paris-agreement | Countries set their own nationally determined contributions | 0% | 83% |
 | paris-agreement | Contributions are meant to ratchet up over time | 20% | 80% |
 | mrna-vaccines | Host cell ribosomes translate the mRNA into the protein | 50% | 83% |
+| mrna-vaccines | The immune system responds to that protein, creating antibodies and memory | 29% | 71% |
 | mrna-vaccines | The mRNA degrades quickly and does not alter host DNA | 12% | 75% |
 | crispr-cas9 | Derived from a bacterial adaptive immune system | 40% | 100% |
 | crispr-cas9 | The Cas9 enzyme cuts the DNA at that site | 40% | 100% |
@@ -52,9 +66,9 @@ Key points one side reaches and the other does not.
 | gdpr-provisions | Individual rights including access, erasure, rectification, and portability | 14% | 71% |
 | gdpr-provisions | Breach notification within 72 hours | 25% | 75% |
 | gdpr-provisions | Fines up to 4 percent of global annual turnover or 20 million euros | 0% | 71% |
-| transformer-architecture | Introduced in the 2017 paper Attention Is All You Need | 0% | 100% |
+| transformer-architecture | Introduced in the 2017 paper Attention Is All You Need | 17% | 100% |
 | transformer-architecture | Uses self-attention instead of recurrence | 0% | 100% |
-| transformer-architecture | Handles long-range dependencies well and underpins modern large language models | 30% | 70% |
+| transformer-architecture | Handles long-range dependencies well and underpins modern large language models | 0% | 70% |
 | quantum-entanglement | Measurement outcomes are correlated regardless of separation | 20% | 80% |
 | quantum-entanglement | Correlations exceed what classical local theories allow, confirmed by Bell tests | 11% | 67% |
 | quantum-entanglement | Does not permit faster-than-light communication | 29% | 86% |
@@ -71,7 +85,6 @@ Key points one side reaches and the other does not.
 | inflation-causes | Inflation expectations becoming self-reinforcing | 20% | 60% |
 | solar-pv | Uses semiconductor material, typically silicon | 0% | 100% |
 | solar-pv | A p-n junction creates an internal electric field | 20% | 60% |
-| solar-pv | Photons excite electrons into a conducting state, the photovoltaic effect | 29% | 71% |
 | solar-pv | An inverter converts DC to AC for grid use | 50% | 100% |
 | jwst-purpose | Launched in December 2021 | 33% | 100% |
 | jwst-purpose | Studies the earliest galaxies and highly redshifted light | 17% | 67% |
@@ -97,7 +110,7 @@ Key points one side reaches and the other does not.
 | federal-reserve-role | Dual mandate of maximum employment and price stability | 0% | 100% |
 | federal-reserve-role | Sets the federal funds rate target | 20% | 100% |
 | federal-reserve-role | Uses open market operations to implement policy | 17% | 83% |
-| federal-reserve-role | Supervises and regulates banks | 33% | 100% |
+| federal-reserve-role | Supervises and regulates banks | 0% | 100% |
 | federal-reserve-role | Acts as lender of last resort in a crisis | 0% | 60% |
 | federal-reserve-role | Supports the payment and clearing system | 25% | 75% |
 
@@ -106,3 +119,4 @@ Key points one side reaches and the other does not.
 - Lexical coverage is not support. A passage containing every word of a claim can still contradict it, which is exactly why the judgment itself is left to a model.
 - Wikipedia is unusually well structured and unusually fetchable. A run over the paid search backend's mix of news and vendor pages would fetch less cleanly, and the fetch outcomes above are the optimistic case.
 - Key points stand in for cited claims. A real report's claims are narrower and phrased in its own words, which lexical matching handles less well than it handles these.
+- The figures move between runs. Repeated runs of this measurement put the page column between 85 and 87 of 100, because the search results and the pages behind them are live and edited. The page-against-snippet gap is far larger than that drift; the gap between ranking rules is not, which is why the rule in use is not chosen on it.

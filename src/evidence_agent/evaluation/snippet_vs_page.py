@@ -25,6 +25,8 @@ import sys
 from pathlib import Path
 
 from evidence_agent.evaluation.pages import (
+    DEFAULT_SELECTOR,
+    SELECTORS,
     content_terms,
     fetch_page,
     random_passages,
@@ -46,7 +48,14 @@ LOCATABLE = 0.6
 
 
 def best_coverage(point: str, texts: list[str]) -> float:
-    """Best share of the key point's content words found in any one text."""
+    """Best share of the key point's content words found in any one text.
+
+    The yardstick, and deliberately the plainest possible one: unweighted, and
+    with no stemming. The selectors being compared below use stemming and term
+    weighting, and scoring them with their own notion of a match would raise
+    every column at once and prove nothing about which puts the evidence in front
+    of the judge.
+    """
     terms = content_terms(point)
     return max((score_passage(terms, text) for text in texts), default=0.0)
 
@@ -68,10 +77,19 @@ def compare_one(question: dict, backend, max_results: int = RESULTS_PER_QUESTION
     points = []
     for i, point in enumerate(question["key_points"]):
         snippet_texts = [f"{s['result'].title}\n{s['result'].snippet}" for s in sources]
-        page_texts = [
-            "\n\n".join(passage for _, passage in select_passages(point, s["page"].text))
-            for s in usable
-        ]
+        # One set of selected passages per selector, so the ablation costs no
+        # extra fetches. The named default is what the harness actually uses.
+        by_selector = {
+            name: [
+                "\n\n".join(
+                    passage
+                    for _, passage in select_passages(point, s["page"].text, selector=selector)
+                )
+                for s in usable
+            ]
+            for name, selector in SELECTORS.items()
+        }
+        page_texts = by_selector[DEFAULT_SELECTOR]
         # The control: as much of the same page, chosen without seeing the point.
         # Matched to each page's own selected length rather than to the cap, since
         # selection often stops short of it. Seeded per key point so each one gets
@@ -89,6 +107,9 @@ def compare_one(question: dict, backend, max_results: int = RESULTS_PER_QUESTION
                 "snippet_coverage": best_coverage(point, snippet_texts),
                 "page_coverage": best_coverage(point, page_texts),
                 "random_passage_coverage": best_coverage(point, control_texts),
+                "selector_coverage": {
+                    name: best_coverage(point, texts) for name, texts in by_selector.items()
+                },
                 "snippet_chars": _mean_chars(snippet_texts),
                 "page_evidence_chars": _mean_chars(page_texts),
                 "random_passage_chars": _mean_chars(control_texts),
@@ -131,9 +152,37 @@ def aggregate(records: list[dict], threshold: float = LOCATABLE) -> dict:
     for source in sources:
         verdicts[source["verdict"]] = verdicts.get(source["verdict"], 0) + 1
 
+    selectors = sorted({name for point in points for name in point.get("selector_coverage", {})})
+    # Net counts hide what moved. Every selector ranks the same passages from the
+    # same fetch, so the comparison against the plain rule can be paired point by
+    # point, which is the same discipline as the page-against-snippet counts above.
+    ablation = {
+        name: {
+            "locatable": len([p for p in points if p["selector_coverage"][name] >= threshold]),
+            "mean_coverage": _mean([{"v": p["selector_coverage"][name]} for p in points], "v"),
+            "gained_over_plain": len(
+                [
+                    p
+                    for p in points
+                    if p["selector_coverage"][name] >= threshold > p["selector_coverage"]["plain"]
+                ]
+            ),
+            "lost_against_plain": len(
+                [
+                    p
+                    for p in points
+                    if p["selector_coverage"]["plain"] >= threshold > p["selector_coverage"][name]
+                ]
+            ),
+        }
+        for name in selectors
+    }
+
     return {
         "n_questions": len(records),
         "n_key_points": len(points),
+        "default_selector": DEFAULT_SELECTOR,
+        "selector_ablation": ablation,
         "n_sources": len(sources),
         "fetch_verdicts": dict(sorted(verdicts.items())),
         "threshold": threshold,
@@ -219,6 +268,78 @@ def _verdict_note(summary: dict) -> str:
     )
 
 
+def _ablation_section(summary: dict) -> list[str]:
+    """How the ranking rules compare on the fixed yardstick.
+
+    Separate from the headline because it answers a different question: not
+    whether to read the page, but how to choose which part of it. A rule is worth
+    its complexity only if it locates more points than the plain one does.
+    """
+    ablation = summary.get("selector_ablation")
+    if not ablation:
+        return []
+
+    total = summary["n_key_points"]
+    lines = [
+        "## Which ranking rule finds the evidence",
+        "",
+        "All four rank the same passages from the same fetch; only the notion of a match differs. "
+        "Scored on the same plain yardstick as everything above, so a rule cannot win by counting "
+        "its own matches. The last two columns are paired against the plain rule point by point, "
+        "since a net count of one or two hides whether nothing moved or a handful moved both ways.",
+        "",
+        "| Ranking rule | Key points locatable | Mean coverage | Gained over plain | Lost against plain |",
+        "|---|---|---|---|---|",
+    ]
+    for name, entry in sorted(ablation.items(), key=lambda kv: -kv[1]["locatable"]):
+        marker = " (in use)" if name == summary.get("default_selector") else ""
+        lines.append(
+            f"| {name}{marker} | {entry['locatable']} of {total} | "
+            f"{entry['mean_coverage'] * 100:.0f}% | {entry['gained_over_plain']} | "
+            f"{entry['lost_against_plain']} |"
+        )
+
+    return lines + ["", _ablation_verdict(ablation, total), ""]
+
+
+# A net difference at or below this many key points is not something 100 points
+# can separate from the wording of the points themselves.
+ABLATION_MARGIN = 3
+
+
+def _ablation_verdict(ablation: dict, total: int) -> str:
+    plain = ablation.get("plain")
+    if not plain:
+        return ""
+
+    best_name, best = max(
+        ((name, entry) for name, entry in ablation.items() if name != "plain"),
+        key=lambda kv: kv[1]["locatable"],
+    )
+    net = best["locatable"] - plain["locatable"]
+
+    if net <= 0:
+        return (
+            "Nothing beats the plain rule, so stemming and term weighting are complexity with no "
+            "measured benefit and the plain rule stays in use. These key points share wording with "
+            "the pages that answer them, which is the easy case for exact matching and not the "
+            "case the extra rules were built for."
+        )
+    if net <= ABLATION_MARGIN:
+        return (
+            f"{best_name} is {net} of {total} ahead of the plain rule, gaining "
+            f"{best['gained_over_plain']} points and losing {best['lost_against_plain']}. That is "
+            "too small a margin for 100 key points to call, so it is recorded rather than acted on: "
+            "the rule in use changes when a larger question set separates them, not on a difference "
+            "this size."
+        )
+    return (
+        f"{best_name} locates {net} more of {total} than the plain rule, gaining "
+        f"{best['gained_over_plain']} and losing {best['lost_against_plain']}, so the extra matching "
+        "rules earn their place and it is the rule in use."
+    )
+
+
 def report(summary: dict, records: list[dict]) -> str:
     lines = [
         "# Snippet or page: which one actually contains the evidence",
@@ -255,6 +376,7 @@ def report(summary: dict, records: list[dict]) -> str:
         "",
         _control_note(summary),
         "",
+        *_ablation_section(summary),
         "## Fetch outcomes",
         "",
         "| Verdict | Sources |",
@@ -293,6 +415,10 @@ def report(summary: dict, records: list[dict]) -> str:
         "outcomes above are the optimistic case.",
         "- Key points stand in for cited claims. A real report's claims are narrower and phrased in "
         "its own words, which lexical matching handles less well than it handles these.",
+        "- The figures move between runs. Repeated runs of this measurement put the page column "
+        "between 85 and 87 of 100, because the search results and the pages behind them are live "
+        "and edited. The page-against-snippet gap is far larger than that drift; the gap between "
+        "ranking rules is not, which is why the rule in use is not chosen on it.",
     ]
     return "\n".join(lines) + "\n"
 

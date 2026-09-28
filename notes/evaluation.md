@@ -77,7 +77,34 @@ ranking is doing the work rather than the character budget.
 What this does not show: lexical coverage is not support, and a passage
 containing every word of a claim can still contradict it, which is why the
 judgment itself stays with a model. Wikipedia is also unusually fetchable, so
-the fetch outcomes here are the optimistic case.
+the fetch outcomes here are the optimistic case. The figures also move between
+runs, from 85 to 87 of 100 on the page column, because the search results and
+the pages behind them are live.
+
+### Which ranking rule, and why it is still the plain one
+
+Two improvements to the ranking are implemented alongside the plain term
+overlap: light stemming, so that "shorter wavelengths scatter" matches "shorter
+wavelength is scattered", and weighting each term by how rare it is on the page,
+since a word appearing on every line cannot say which line carries the claim.
+
+Both are ablated in the same run. All four rules rank the same passages from the
+same fetch, and all four are scored on the plain yardstick rather than on their
+own notion of a match, which matters more than it sounds: stemming and weighting
+raise the measured coverage of everything they touch, including of passages
+picked at random, so a rule scored by its own rule wins by construction.
+
+On that yardstick, stemming locates 84 of 100 key points against the plain
+rule's 86, and weighting reaches 88, gaining 3 points and losing 1. The gain is
+inside the run-to-run drift above, so it is recorded and not acted on: the rule
+in use is named in one constant and changes when a larger question set can
+separate them.
+
+The likelier reason nothing separates is that this question set is the easy case
+for exact matching. Its key points were written alongside the reference answers
+and share wording with the pages that answer them, so there is little paraphrase
+for either rule to recover. A question set written deliberately away from its
+sources is what would test them.
 
 ### When the page cannot be read
 

@@ -12,6 +12,11 @@ judged from pages.
 import pytest
 
 from evidence_agent.evaluation.pages import (
+    DEFAULT_SELECTOR,
+    PLAIN,
+    SELECTORS,
+    STEMMED,
+    WEIGHTED,
     Evidence,
     PageText,
     evidence_for,
@@ -21,6 +26,8 @@ from evidence_agent.evaluation.pages import (
     random_passages,
     score_passage,
     select_passages,
+    stem,
+    term_weights,
     to_text,
 )
 
@@ -291,3 +298,98 @@ def test_random_passages_are_returned_in_page_order():
 
 def test_a_page_with_no_prose_has_no_control_passages():
     assert random_passages("Home\nAbout\nContact", seed=1, target_chars=600) == []
+
+
+# Matching rules -------------------------------------------------------------------
+
+
+def test_inflections_of_a_word_stem_together():
+    """The failure this addresses: the report writes "shorter wavelengths scatter
+    more" and the page says "light of shorter wavelength is scattered"."""
+    assert stem("wavelengths") == stem("wavelength")
+    assert stem("scattered") == stem("scattering") == stem("scatters")
+    assert stem("predictions") == stem("prediction") == stem("predicting")
+
+
+def test_short_words_are_left_alone():
+    """Stripping a suffix off a short word merges words that mean nothing alike."""
+    for word in ("gas", "less", "data", "ones"):
+        assert stem(word) == word
+
+
+def test_a_double_s_ending_is_not_stripped():
+    """class and classes have to reach the same form, and stripping the s from
+    class would send them to different ones."""
+    assert stem("class") == "class"
+    assert stem("classes") == "class"
+    assert stem("less") == "less"
+
+
+def test_a_doubled_consonant_left_by_a_suffix_is_collapsed():
+    assert stem("labelled") == stem("labels") == "label"
+
+
+def test_term_weights_favour_a_term_that_appears_in_one_passage():
+    passages_ = [
+        "learning learning about the topic and its history",
+        "learning again, with rayleigh scattering mentioned once",
+        "learning a third time with nothing else of note",
+    ]
+    weights = term_weights(passages_)
+
+    assert weights["rayleigh"] > weights["learning"]
+
+
+def test_weighted_scoring_prefers_the_passage_with_the_rare_term():
+    """A term on every line of the page cannot say which line carries the claim."""
+    candidates = [
+        _para("Supervised learning is discussed throughout this article at length."),
+        _para("Supervised learning here, plus the rayleigh scattering the claim is about."),
+    ]
+    text = "\n".join(candidates)
+
+    plain_first = select_passages("rayleigh scattering supervised learning", text, max_passages=1)
+    weighted_first = select_passages(
+        "rayleigh scattering supervised learning", text, max_passages=1, selector=WEIGHTED
+    )
+
+    assert weighted_first[0][0] == 1, "the rare term should decide it"
+    assert plain_first  # both rank something; the point is which one
+
+
+def test_a_stemmed_selector_matches_an_inflected_claim():
+    carrier = _para("Light of a shorter wavelength is scattered more by the atmosphere.")
+    others = [_para(f"An unrelated paragraph about the atmosphere, number {i}.") for i in range(8)]
+    text = "\n".join(others + [carrier])
+
+    claim = "shorter wavelengths scatter more"
+    plain = select_passages(claim, text, selector=PLAIN)
+    stemmed = select_passages(claim, text, selector=STEMMED)
+
+    assert any("shorter wavelength is scattered" in p for _, p in stemmed)
+    assert len(plain) == len(stemmed), "both keep to the same passage budget"
+
+
+def test_every_named_selector_ranks_every_candidate():
+    text = "\n".join(_para(f"Paragraph number {i} about the tram network.") for i in range(6))
+    candidates = passages(text)
+
+    for name, selector in SELECTORS.items():
+        order = selector.rank("tram network", candidates)
+        assert sorted(order) == list(range(len(candidates))), name
+
+
+def test_the_selector_in_use_is_the_one_the_default_names():
+    assert DEFAULT_SELECTOR in SELECTORS
+    text = "\n".join(_para(f"Paragraph number {i} about the tram network.") for i in range(6))
+
+    assert select_passages("tram", text) == select_passages(
+        "tram", text, selector=SELECTORS[DEFAULT_SELECTOR]
+    )
+
+
+def test_a_stem_never_depends_on_the_order_the_suffixes_are_tried():
+    """Regression: classes stripped to class and then collapsed the doubled s to
+    clas, a form class itself never reaches, so the two stopped matching."""
+    for singular, plural in (("class", "classes"), ("guess", "guesses"), ("pass", "passes")):
+        assert stem(singular) == stem(plural) == singular
