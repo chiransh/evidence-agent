@@ -41,6 +41,7 @@ RESULTS_PATH = Path("evals/results/snippet-vs-page.json")
 REPORT_PATH = Path("evals/snippet-vs-page.md")
 
 RESULTS_PER_QUESTION = 3
+SELECTOR_ORDER = ("plain", "stemmed", "weighted", "stemmed_weighted")
 # Share of a key point's content words that has to appear in one passage for the
 # point to count as locatable there. Reported alongside the result, because the
 # threshold is a judgment and the raw coverage figures are given too.
@@ -62,6 +63,10 @@ def best_coverage(point: str, texts: list[str]) -> float:
 
 def _mean_chars(texts: list[str]) -> float:
     return sum(len(text) for text in texts) / len(texts) if texts else 0.0
+
+
+def subsets(records: list[dict]) -> list[str]:
+    return sorted({record.get("subset", "core") for record in records})
 
 
 def compare_one(question: dict, backend, max_results: int = RESULTS_PER_QUESTION) -> dict:
@@ -118,6 +123,7 @@ def compare_one(question: dict, backend, max_results: int = RESULTS_PER_QUESTION
 
     return {
         "id": question["id"],
+        "subset": question.get("subset", "core"),
         "question": question["question"],
         "sources": [
             {
@@ -340,6 +346,103 @@ def _ablation_verdict(ablation: dict, total: int) -> str:
     )
 
 
+def _subset_section(summary: dict) -> list[str]:
+    """The same figures split by subset.
+
+    The paraphrase questions were written because the ranking rules could not be
+    separated on the core ones, and the suspicion was that the core key points
+    share wording with the pages. Pooling the two would hide exactly the effect
+    they were added to expose.
+    """
+    by_subset = summary.get("by_subset")
+    if not by_subset or len(by_subset) < 2:
+        return []
+
+    lines = [
+        "",
+        "## Split by subset",
+        "",
+        "The core questions' key points were written in the vocabulary the sources use. The "
+        "paraphrase questions' key points state equally well documented facts in deliberately "
+        "different wording. Every figure below is on the same plain yardstick.",
+        "",
+        "| Subset | Key points | Locatable in snippet | Locatable in page | Only in page |",
+        "|---|---|---|---|---|",
+    ]
+    for name, entry in by_subset.items():
+        lines.append(
+            f"| {name} | {entry['n_key_points']} | {entry['locatable_in_snippet']} | "
+            f"{entry['locatable_in_page']} | {entry['locatable_only_in_page']} |"
+        )
+
+    lines += [
+        "",
+        "| Subset | " + " | ".join(SELECTOR_ORDER) + " |",
+        "|---|" + "---|" * len(SELECTOR_ORDER),
+    ]
+    for name, entry in by_subset.items():
+        ablation = entry.get("selector_ablation", {})
+        cells = [
+            f"{ablation[rule]['locatable']} of {entry['n_key_points']}"
+            if rule in ablation
+            else "n/a"
+            for rule in SELECTOR_ORDER
+        ]
+        lines.append(f"| {name} | " + " | ".join(cells) + " |")
+
+    lines += ["", _subset_verdict(by_subset), ""]
+    return lines
+
+
+def _subset_verdict(by_subset: dict) -> str:
+    """Whether the harder wording changes the picture, stated from the numbers."""
+    core, paraphrase = by_subset.get("core"), by_subset.get("paraphrase")
+    if not core or not paraphrase:
+        return ""
+
+    def share(entry: dict, key: str) -> float:
+        return entry[key] / entry["n_key_points"] if entry["n_key_points"] else 0.0
+
+    page_gap = share(paraphrase, "locatable_in_page") - share(core, "locatable_in_page")
+    lines = [
+        f"Paraphrasing the key points costs {abs(page_gap) * 100:.0f} points of page locatability "
+        f"({share(core, 'locatable_in_page') * 100:.0f} percent of the core points against "
+        f"{share(paraphrase, 'locatable_in_page') * 100:.0f} percent of the paraphrased ones), which "
+        "is the sample working as intended: these are the claims lexical matching is supposed to "
+        "find hardest."
+        if page_gap < 0
+        else "The paraphrased points are no harder to locate than the core ones, so this subset did "
+        "not create the difficulty it was written to create, and it cannot be used to argue for a "
+        "cleverer matching rule."
+    ]
+
+    plain = paraphrase.get("selector_ablation", {}).get("plain")
+    others = {
+        rule: entry
+        for rule, entry in paraphrase.get("selector_ablation", {}).items()
+        if rule != "plain"
+    }
+    if plain and others:
+        best_rule, best = max(others.items(), key=lambda kv: kv[1]["locatable"])
+        net = best["locatable"] - plain["locatable"]
+        if net > ABLATION_MARGIN:
+            lines.append(
+                f"On this subset the rules do separate: {best_rule} locates {best['locatable']} of "
+                f"{paraphrase['n_key_points']} against the plain rule's {plain['locatable']}, gaining "
+                f"{best['gained_over_plain']} and losing {best['lost_against_plain']}. This is the "
+                "case the extra matching was built for, and the measurement the rule in use was "
+                "changed on."
+            )
+        else:
+            lines.append(
+                f"Even here the rules do not separate: {best_rule} reaches {best['locatable']} of "
+                f"{paraphrase['n_key_points']} against the plain rule's {plain['locatable']}. "
+                "Stemming and term weighting were built for exactly this case and still do not earn "
+                "their place, which is a stronger result against them than the core set alone gave."
+            )
+    return " ".join(lines)
+
+
 def report(summary: dict, records: list[dict]) -> str:
     lines = [
         "# Snippet or page: which one actually contains the evidence",
@@ -404,6 +507,8 @@ def report(summary: dict, records: list[dict]) -> str:
                 f"| {record['id']} | {point['key_point']} | {snippet * 100:.0f}% | {page * 100:.0f}% |"
             )
 
+    lines += _subset_section(summary)
+
     lines += [
         "",
         "## What this does not show",
@@ -415,10 +520,15 @@ def report(summary: dict, records: list[dict]) -> str:
         "outcomes above are the optimistic case.",
         "- Key points stand in for cited claims. A real report's claims are narrower and phrased in "
         "its own words, which lexical matching handles less well than it handles these.",
-        "- The figures move between runs. Repeated runs of this measurement put the page column "
-        "between 85 and 87 of 100, because the search results and the pages behind them are live "
-        "and edited. The page-against-snippet gap is far larger than that drift; the gap between "
-        "ranking rules is not, which is why the rule in use is not chosen on it.",
+        "- The figures move between runs. Repeated runs put the core subset's page column between "
+        "85 and 87 of its 100 key points, because the search results and the pages behind them are "
+        "live and edited. Differences smaller than that are not results, which is why the ranking "
+        "rules were left alone until a subset separated them by more.",
+        "- The paraphrased subset was written by the same person as the ranking rules, and written "
+        "after them, to create a case the plain rule should struggle with. It succeeded at that, and "
+        "that is also its weakness: a subset built to expose a gap is not independent evidence that "
+        "the gap matters in production. What would be independent is the same measurement over "
+        "claims a real run actually cited, which needs the paid backend and a key.",
     ]
     return "\n".join(lines) + "\n"
 
@@ -449,6 +559,12 @@ def main(argv: list[str] | None = None) -> None:
             print(f"  skipped: {type(exc).__name__}: {exc}", file=sys.stderr)
 
     summary = aggregate(records)
+    # One aggregate per subset as well as over everything, since the subsets were
+    # written to be compared rather than pooled.
+    summary["by_subset"] = {
+        name: aggregate([r for r in records if r.get("subset", "core") == name])
+        for name in subsets(records)
+    }
     out_path, report_path = Path(args.out), Path(args.report)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps({"summary": summary, "per_question": records}, indent=2))

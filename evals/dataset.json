@@ -1,5 +1,5 @@
 {
-  "notes": "Hand-written reference answers and key points. These are the harness's weakest link: they encode one author's view of what a good answer covers, and coverage scores are only as good as this list. Questions were chosen to have stable, widely documented answers so the reference stays correct over time. See notes/evaluation.md.",
+  "notes": "Hand-written reference answers and key points. These are the harness's weakest link: they encode one author's view of what a good answer covers, and coverage scores are only as good as this list. Questions were chosen to have stable, widely documented answers so the reference stays correct over time. Each question carries a subset. The 'core' questions are the original set, whose key points were written in the vocabulary the sources themselves use. The 'paraphrase' questions were added to test the opposite case: the facts are equally well documented, but every key point is deliberately worded away from the phrasing a source would use, with a plain-language synonym wherever the technical term was available. They exist because the passage-ranking ablation in evals/snippet-vs-page.md could not separate its rules on the core set, and the reason looked like the core key points sharing wording with the pages that answer them. They were written from knowledge rather than from the pages, so the wording was not chosen against any particular source. See notes/evaluation.md.",
   "questions": [
     {
       "id": "supervised-vs-unsupervised",
@@ -10,7 +10,8 @@
         "Unsupervised learning works on unlabelled data",
         "Supervised learning predicts a target; unsupervised learning finds structure such as clusters",
         "Classification and regression are supervised; clustering and dimensionality reduction are unsupervised"
-      ]
+      ],
+      "subset": "core"
     },
     {
       "id": "financial-crisis-2008",
@@ -22,7 +23,8 @@
         "Securitisation into mortgage-backed securities and CDOs that obscured risk",
         "Credit rating agencies rated these securities too favourably",
         "High leverage at banks turned losses into insolvency and a credit freeze"
-      ]
+      ],
+      "subset": "core"
     },
     {
       "id": "http3-vs-http2",
@@ -33,7 +35,8 @@
         "Eliminates TCP head-of-line blocking between streams",
         "Faster connection establishment because TLS is integrated into the handshake",
         "Supports connection migration when the network path changes"
-      ]
+      ],
+      "subset": "core"
     },
     {
       "id": "paris-agreement",
@@ -45,7 +48,8 @@
         "Countries set their own nationally determined contributions",
         "Contributions are meant to ratchet up over time",
         "Includes transparency and reporting requirements"
-      ]
+      ],
+      "subset": "core"
     },
     {
       "id": "mrna-vaccines",
@@ -57,7 +61,8 @@
         "Host cell ribosomes translate the mRNA into the protein",
         "The immune system responds to that protein, creating antibodies and memory",
         "The mRNA degrades quickly and does not alter host DNA"
-      ]
+      ],
+      "subset": "core"
     },
     {
       "id": "crispr-cas9",
@@ -69,7 +74,8 @@
         "The Cas9 enzyme cuts the DNA at that site",
         "Cell repair pathways then disable a gene or insert a new sequence",
         "Applications include research knockouts, gene therapy, and crop engineering"
-      ]
+      ],
+      "subset": "core"
     },
     {
       "id": "gdpr-provisions",
@@ -82,7 +88,8 @@
         "Individual rights including access, erasure, rectification, and portability",
         "Breach notification within 72 hours",
         "Fines up to 4 percent of global annual turnover or 20 million euros"
-      ]
+      ],
+      "subset": "core"
     },
     {
       "id": "transformer-architecture",
@@ -94,7 +101,8 @@
         "Multi-head attention and positional encodings are core components",
         "Parallelises training across sequence positions, unlike RNNs",
         "Handles long-range dependencies well and underpins modern large language models"
-      ]
+      ],
+      "subset": "core"
     },
     {
       "id": "quantum-entanglement",
@@ -106,7 +114,8 @@
         "Correlations exceed what classical local theories allow, confirmed by Bell tests",
         "Does not permit faster-than-light communication",
         "Relevant to quantum computing and quantum cryptography"
-      ]
+      ],
+      "subset": "core"
     },
     {
       "id": "soviet-collapse",
@@ -119,7 +128,8 @@
         "Nationalist and independence movements in the constituent republics",
         "The failed August 1991 coup attempt",
         "Formal dissolution in December 1991"
-      ]
+      ],
+      "subset": "core"
     },
     {
       "id": "tcp-vs-udp",
@@ -132,7 +142,8 @@
         "TCP provides flow and congestion control",
         "UDP has lower overhead and latency",
         "TCP suits web and file transfer; UDP suits streaming, voice, and DNS"
-      ]
+      ],
+      "subset": "core"
     },
     {
       "id": "inflation-causes",
@@ -145,7 +156,8 @@
         "Cost-push inflation from higher input costs or supply shocks",
         "Excessive money supply growth relative to output",
         "Inflation expectations becoming self-reinforcing"
-      ]
+      ],
+      "subset": "core"
     },
     {
       "id": "solar-pv",
@@ -157,7 +169,8 @@
         "Photons excite electrons into a conducting state, the photovoltaic effect",
         "The junction's field separates charges to produce direct current",
         "An inverter converts DC to AC for grid use"
-      ]
+      ],
+      "subset": "core"
     },
     {
       "id": "jwst-purpose",
@@ -171,7 +184,8 @@
         "Studies star and planet formation within dust clouds",
         "Characterises exoplanet atmospheres",
         "Has a segmented primary mirror about 6.5 metres across"
-      ]
+      ],
+      "subset": "core"
     },
     {
       "id": "sleep-deprivation",
@@ -184,7 +198,8 @@
         "Weight gain and appetite hormone disruption",
         "Weakened immune function",
         "Higher risk of depression and anxiety"
-      ]
+      ],
+      "subset": "core"
     },
     {
       "id": "kubernetes-purpose",
@@ -198,7 +213,8 @@
         "Service discovery and load balancing",
         "Rolling updates and rollbacks",
         "Declarative desired-state model reconciled by a control plane"
-      ]
+      ],
+      "subset": "core"
     },
     {
       "id": "overfitting-underfitting",
@@ -211,7 +227,8 @@
         "Underfitting means the model is too simple for the underlying structure",
         "Overfitting is high variance; underfitting is high bias",
         "Remedies include regularisation, more data, or changing model complexity"
-      ]
+      ],
+      "subset": "core"
     },
     {
       "id": "federal-reserve-role",
@@ -225,6 +242,130 @@
         "Supervises and regulates banks",
         "Acts as lender of last resort in a crisis",
         "Supports the payment and clearing system"
+      ],
+      "subset": "core"
+    },
+    {
+      "id": "photosynthesis-basics",
+      "subset": "paraphrase",
+      "question": "How do plants turn sunlight into food?",
+      "reference_answer": "Plants use energy from light to build sugars out of carbon dioxide drawn from the air and water taken up by the roots. The light is captured by chlorophyll in the chloroplasts of leaf cells, and the captured energy drives a set of reactions that assemble simple sugars, which the plant then uses for growth or stores. Oxygen is produced as a by-product and released through the leaves.",
+      "key_points": [
+        "Light energy is captured by the green pigment in leaf cells",
+        "Gas taken from the air and water drawn up by the roots are the raw materials",
+        "The captured energy is used to build simple sugars the plant lives on",
+        "Oxygen leaves the plant as a leftover of the process"
+      ]
+    },
+    {
+      "id": "herd-immunity",
+      "subset": "paraphrase",
+      "question": "Why does vaccinating most of a population also protect the people who are not vaccinated?",
+      "reference_answer": "When a large enough share of a population is immune, an infection introduced into it usually fails to find a susceptible host before it stops being transmissible, so chains of transmission break down and outbreaks fade rather than grow. The share required rises with how easily the disease spreads: a highly transmissible infection such as measles needs a far higher proportion immune than a less transmissible one. This indirect protection matters most for people who cannot be vaccinated themselves, such as newborns and those whose immune systems are suppressed.",
+      "key_points": [
+        "An infection that cannot find a susceptible host stops spreading",
+        "The share of a population that must be immune rises with how easily the disease passes between people",
+        "People who cannot be vaccinated are shielded indirectly by those around them",
+        "Protection is a property of the group rather than of any one person"
+      ]
+    },
+    {
+      "id": "rates-and-inflation",
+      "subset": "paraphrase",
+      "question": "Why do central banks raise interest rates when prices are rising quickly?",
+      "reference_answer": "Raising the policy rate makes borrowing more expensive and saving more attractive, which reduces spending by households and investment by firms. Weaker demand relieves the pressure on prices, so inflation slows. The channel works with a long and variable lag, often a year or more, which is why decisions are made on forecasts rather than on the latest reading. Pushed too far, the same mechanism reduces output and employment, so the difficulty is calibration rather than direction.",
+      "key_points": [
+        "Dearer credit discourages households from spending and firms from investing",
+        "Slower demand takes the pressure off prices",
+        "The effect arrives long after the decision, so policy is set on forecasts",
+        "Overdoing it costs output and jobs"
+      ]
+    },
+    {
+      "id": "browser-address-lookup",
+      "subset": "paraphrase",
+      "question": "What happens between typing a web address and the page appearing?",
+      "reference_answer": "The human-readable name is first resolved to a numeric network address, a lookup that is answered from a cache where possible and otherwise passed up a hierarchy of name servers. The browser then opens a connection to that address, negotiates encryption if the site uses it, and sends a request for the page. The server replies with the document, which usually references further files that the browser fetches in turn before laying out and drawing the result.",
+      "key_points": [
+        "The name is first turned into a numeric address",
+        "That lookup is answered from a saved copy where one exists, rather than repeated every time",
+        "The browser then opens a connection and asks for the document",
+        "The document points at further files that are fetched before the page is drawn"
+      ]
+    },
+    {
+      "id": "antibiotic-resistance",
+      "subset": "paraphrase",
+      "question": "Why do antibiotics stop working over time?",
+      "reference_answer": "Treatment kills susceptible bacteria and leaves behind any that happen to carry a trait letting them survive, which then multiply and pass that trait on, including to other species through the exchange of genetic material. Every unnecessary course, in medicine or in agriculture, adds to the selective pressure driving that process. Resistant strains then spread between people and across borders, and new classes of drug are discovered far more slowly than resistance emerges.",
+      "key_points": [
+        "Survivors of treatment are the ones that reproduce, so the survivable trait becomes common",
+        "Bacteria also hand these traits to other bacteria directly",
+        "Every course given when it was not needed adds to the pressure",
+        "Replacement drugs arrive more slowly than the problem spreads"
+      ]
+    },
+    {
+      "id": "earthquake-locations",
+      "subset": "paraphrase",
+      "question": "Why do earthquakes happen where they do?",
+      "reference_answer": "The rigid outer shell of the Earth is divided into plates that move slowly relative to one another, and most earthquakes occur along the boundaries where they meet, whether they are sliding past, pulling apart, or one descending beneath another. Motion is resisted by friction, so stress accumulates in the rock until it is released suddenly as slip along a fault, which is the shaking that is felt. A minority of earthquakes occur far from any boundary, along ancient weaknesses within a plate.",
+      "key_points": [
+        "The planet's outer shell is broken into slabs that move against each other",
+        "Most shaking happens along the lines where two slabs meet",
+        "Friction holds the rock until accumulated strain releases in a sudden slip",
+        "A few happen far from any boundary, along old lines of weakness"
+      ]
+    },
+    {
+      "id": "saving-early",
+      "subset": "paraphrase",
+      "question": "Why does saving early matter more than saving more later?",
+      "reference_answer": "Returns are themselves reinvested, so each period's gain becomes part of the base on which the next period's gain is calculated, and the balance grows exponentially rather than in a straight line. Time therefore matters more than the amount: a contribution made decades earlier is multiplied through many more periods of growth. The same mechanism works against the saver on costs, since a fee taken every year removes not only itself but everything that sum would have earned.",
+      "key_points": [
+        "Each period's gain joins the sum that earns the next one",
+        "The balance grows by multiplication rather than by addition, so the curve steepens",
+        "Money put in decades earlier passes through far more periods of growth",
+        "A charge taken yearly also removes everything that money would have gone on to earn"
+      ]
+    },
+    {
+      "id": "greenhouse-warming",
+      "subset": "paraphrase",
+      "question": "Why does adding certain gases to the atmosphere warm the planet?",
+      "reference_answer": "Sunlight passes largely unimpeded through the atmosphere and warms the surface, which radiates the energy back out as longer-wavelength infrared. Gases such as carbon dioxide and methane absorb part of that outgoing radiation and re-emit it in all directions, including downward, so less escapes directly to space. Increasing their concentration means the surface and lower atmosphere must reach a higher temperature before outgoing energy again balances incoming, and warming raises atmospheric water vapour, which absorbs in the same way and amplifies the change.",
+      "key_points": [
+        "Incoming light passes through the air and heats the ground",
+        "The warmed ground sends energy back out at longer wavelengths",
+        "Certain gases soak up part of that outgoing energy and send some of it back down",
+        "The surface must therefore get warmer before what leaves matches what arrives",
+        "A warmer atmosphere holds more water vapour, which does the same thing and enlarges the effect"
+      ]
+    },
+    {
+      "id": "shared-secret-over-open-line",
+      "subset": "paraphrase",
+      "question": "How can two computers agree on a secret key while someone is listening to everything they send?",
+      "reference_answer": "Each side generates a private value, derives a public one from it, and sends only the public value. Because of the mathematics chosen, each can combine its own private value with the other's public one to reach the same result, while an observer who has seen only the two public values cannot compute it in any practical amount of time. A certificate signed by a trusted authority is used to confirm that the public value came from the intended party rather than from someone in the middle, and the agreed secret is then used with a fast symmetric cipher for the rest of the conversation.",
+      "key_points": [
+        "Each side keeps one value to itself and sends a value derived from it",
+        "Both can reach the same answer from what they kept and what they received",
+        "An eavesdropper who saw only what was sent cannot work the answer out in any usable time",
+        "A signed credential shows the other side is who it claims, not an impostor relaying messages",
+        "The agreed value is then used with a faster method for the bulk of the traffic"
+      ]
+    },
+    {
+      "id": "two-tides-a-day",
+      "subset": "paraphrase",
+      "question": "Why does the sea rise and fall roughly twice a day?",
+      "reference_answer": "The Moon's gravitational pull is stronger on the side of the Earth facing it than on the far side, and it is this difference across the planet, rather than the pull itself, that matters. The effect stretches the oceans into two bulges, one beneath the Moon and one on the opposite side, and as the Earth rotates a given coast passes through both, giving two high waters in roughly a day. The Sun exerts a smaller tidal effect that adds to the Moon's when the three bodies line up, producing the largest tides, and partly cancels it when the Sun and Moon are at right angles.",
+      "key_points": [
+        "The Moon pulls harder on the near side of the Earth than on the far side",
+        "It is that difference across the planet, not the strength of the pull, that raises the water",
+        "The oceans are stretched into two bulges, one facing the Moon and one opposite it",
+        "A coastline turns through both bulges in about a day, so there are two high waters",
+        "The Sun adds to the effect when it lines up with the Moon and works against it at right angles"
       ]
     }
   ]

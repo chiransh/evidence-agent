@@ -223,3 +223,31 @@ def test_load_previous_tolerates_a_missing_file(tmp_path):
     from evidence_agent.evaluation.harness import load_previous
 
     assert load_previous(tmp_path / "nope.json") == []
+
+
+def test_every_question_declares_a_known_subset():
+    """The subsets are compared rather than pooled, so a question that belongs to
+    neither would quietly land in whichever one the default names."""
+    questions = load_dataset(Path("evals/dataset.json"))
+    counts: dict[str, int] = {}
+    for q in questions:
+        assert "subset" in q, f"{q['id']} has no subset"
+        counts[q["subset"]] = counts.get(q["subset"], 0) + 1
+
+    assert set(counts) == {"core", "paraphrase"}
+    assert counts["paraphrase"] >= 8, "too few to read the paraphrase column on its own"
+
+
+def test_paraphrased_key_points_avoid_the_words_their_own_question_uses():
+    """A subset written to be hard for exact matching, whose points reuse the
+    question's nouns, would not be hard at all. This is a check on the dataset
+    rather than on the code, and it is the dataset that the conclusion rests on."""
+    from evidence_agent.evaluation.pages import content_terms
+
+    for q in load_dataset(Path("evals/dataset.json")):
+        if q["subset"] != "paraphrase":
+            continue
+        question_terms = content_terms(q["question"])
+        for point in q["key_points"]:
+            shared = question_terms & content_terms(point)
+            assert len(shared) <= 3, f"{q['id']}: {point} leans on the question's wording: {shared}"

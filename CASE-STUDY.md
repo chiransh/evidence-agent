@@ -38,7 +38,7 @@ silently degrading every answer would hide a broken configuration.
 
 ## How it is measured
 
-A grading harness runs the agent over 18 hand-written reference questions and
+A grading harness runs the agent over 28 hand-written reference questions and
 records four things per answer:
 
 1. **Do the cited URLs exist**, checked by fetching every one of them.
@@ -56,7 +56,7 @@ sources that block crawlers, so they are reported separately and left out of the
 score.
 
 Comparing two versions of the agent is done question by question with a
-confidence interval, and the report says "inconclusive" when 18 questions cannot
+confidence interval, and the report says "inconclusive" when 28 questions cannot
 separate them rather than quoting a difference that is really noise.
 
 ### Checking a citation against the page, not the search result
@@ -70,26 +70,31 @@ correct.
 So each cited page is fetched and the parts of it that bear on the claim are what
 gets graded. That is a claim about the data, so it was measured rather than
 assumed, and it needs no paid API: over 100 reference points drawn from 54 real
-pages, 86 were findable in the fetched page against 16 in the search snippet, and
-70 were findable in the page and in no snippet at all. None went the other way.
-Grading those 70 on snippets would have marked correct citations as unsupported.
+pages, 110 were findable in the fetched page against 16 in the search snippet,
+and 94 were findable in the page and in no snippet at all. None went the other
+way. Grading those 94 on snippets would have marked correct citations as
+unsupported.
 
 Because the obvious objection is that more text contains more words, the same
 test includes a control: a comparable amount of each page picked without knowing
-what was being looked for finds 18 of 100, fewer than the snippets. The targeting
-is doing the work.
+what was being looked for finds 20 of 143, barely more than the snippets. The
+targeting is doing the work.
 
-Two more elaborate ways of choosing the relevant passage were built and tested in
-the same run, and neither was kept. On a fixed yardstick one of them was worse
-than the simple rule and the other was ahead by a margin smaller than the
-variation between runs. They are in the repository, measured and switched off,
-which is the outcome worth having: the simple thing is in production because it
-was tested, not because nobody looked.
+Two more elaborate ways of choosing the relevant passage were built and measured
+against the simple one, and the first attempt could not separate them. That
+looked like a limitation of the questions rather than of the rules, since their
+reference points were phrased much as the sources phrase things, so ten questions
+were added whose reference points say equally well documented things in
+deliberately different words. On those the difference appears: one of the two
+rules finds the evidence for 22 of 43 hard points where the simple rule finds 16,
+and it is now the one in use. The other rule lost on both sets and is switched
+off. Which one ships is a line in the code that records the measurement behind
+it.
 
 ## Status, stated plainly
 
 The pipeline, the grading harness and the comparison tool are built and tested.
-**The scored results table is not filled in yet.** Running all 18 questions
+**The scored results table is not filled in yet.** Running all 28 questions
 through both versions of the agent takes roughly 200 model API calls, and that
 run is pending.
 
@@ -111,7 +116,7 @@ be the one unrecoverable mistake.
 
 Python, LangGraph, Claude API with structured outputs, Tavily search with a
 keyless Wikipedia fallback, Pydantic, SQLite checkpointing, Streamlit demo.
-126 automated tests, run on every commit.
+119 automated tests, run on every commit.
 
 ## For engineers
 

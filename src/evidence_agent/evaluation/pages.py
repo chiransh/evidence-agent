@@ -269,8 +269,12 @@ SELECTORS = {
 }
 
 # Which one the harness uses. Set from the ablation in evals/snippet-vs-page.md,
-# not from which one sounds most sophisticated.
-DEFAULT_SELECTOR = "plain"
+# not from which one sounds most sophisticated. It was "plain" while the question
+# set could not separate the rules; weighting won on the paraphrased subset added
+# for that purpose, by 24 of 43 key points against 17, gaining seven and losing
+# none, while tying on the original questions. Stemming lost on both and is kept
+# only as the other arm of that comparison.
+DEFAULT_SELECTOR = "weighted"
 
 
 def select_passages(

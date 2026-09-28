@@ -43,7 +43,7 @@ How the eval wraps around that same graph:
 
 ```mermaid
 flowchart TB
-    DS[(18 questions +<br/>reference key points)] --> H[Harness]
+    DS[(28 questions +<br/>reference key points)] --> H[Harness]
     H -->|runs| G[Agent graph]
     G -->|report + findings| H
     H --> U[Fetch every cited URL]
@@ -93,11 +93,13 @@ evidence-agent compare evals/results/eval-no-credibility.json evals/results/eval
 
 **The support judge reads the page, not the search snippet.** A snippet is one or two sentences the search engine chose for its own purposes, and grading a claim against it measures the wrong thing in both directions: a snippet that happens to restate the claim scores a citation as supported without the page being read, while a page that states the claim three paragraphs lower scores as unsupported. So each cited page is fetched, converted to text, split into passages, and the passages with the highest lexical overlap with the claim are what the judge sees, in the page's own reading order. Selection is lexical and deterministic on purpose: having a model choose the evidence for another model to grade would let one judgment hide inside another.
 
-That is a claim about the data, so it was measured rather than asserted, using the keyless Wikipedia backend and the dataset's own key points in place of cited claims. Over 100 key points from 54 fetched pages, 86 were locatable in the selected passages against 16 in the snippet, and 70 were reachable in the page while reachable in no snippet. None went the other way. A judge shown only snippets had no way to confirm those 70, and the honest verdict on evidence it cannot see is unsupported, so the snippet version was understating support by construction.
+That is a claim about the data, so it was measured rather than asserted, using the keyless Wikipedia backend and the dataset's own key points in place of cited claims. Over 143 key points from 84 fetched pages, 110 were locatable in the selected passages against 16 in the snippet, and 94 were reachable in the page while reachable in no snippet. None went the other way. A judge shown only snippets had no way to confirm those 94, and the honest verdict on evidence it cannot see is unsupported, so the snippet version was understating support by construction.
 
-The obvious objection is length: selected passages average 2,432 characters against a snippet's 637, so they would contain more of a claim's words even if the ranking did nothing. The control for that is a slice of the same page drawn without seeing the key point, given at least as many characters as the selection it is compared with. It reaches 18 of 100, below even the snippets. The ranking is doing the work, not the character budget. Repeated runs move the page figure between 85 and 87 of 100, since the search results and the pages behind them are live, which is far smaller than the gap being claimed. Full run in [evals/snippet-vs-page.md](evals/snippet-vs-page.md).
+The obvious objection is length: selected passages average 2,429 characters against a snippet's 635, so they would contain more of a claim's words even if the ranking did nothing. The control for that is a slice of the same page drawn without seeing the key point, given at least as many characters as the selection it is compared with. It reaches 20 of 143, barely above the snippets. The ranking is doing the work, not the character budget. Repeated runs move the figures by a point or two, since the search results and the pages behind them are live, which is far smaller than the gap being claimed. Full run in [evals/snippet-vs-page.md](evals/snippet-vs-page.md).
 
-**Passage ranking is plain term overlap, because the alternatives were measured and did not earn their place.** Two obvious improvements are stemming, so that "shorter wavelengths scatter" matches "shorter wavelength is scattered", and weighting terms by how rare they are on the page, since a word on every line cannot say which line carries the claim. Both are implemented and both are ablated in the same run, ranking the same passages from the same fetch and scored on the same deliberately plain yardstick, because a rule scored by its own notion of a match would win by definition. Stemming locates 84 of 100 against the plain rule's 86. Term weighting reaches 88, gaining 3 points and losing 1, which is inside the run-to-run drift and so recorded rather than acted on. The rule in use is named in one place in the code and changes when a larger question set can separate them.
+**Passages are ranked by term rarity, and that was decided by an ablation rather than by taste.** Two improvements over plain term overlap are implemented: stemming, so that "shorter wavelengths scatter" matches "shorter wavelength is scattered", and weighting each term by how rare it is on the page, since a word on every line cannot say which line carries the claim. All four combinations are ablated in one run, ranking the same passages from the same fetch and scored on the same deliberately plain yardstick, because a rule scored by its own notion of a match would win by definition.
+
+On the original 18 questions nothing separated, and the rule in use stayed plain. The reason looked like the question set: its key points were written in the vocabulary the sources use, which is the easy case for exact matching. So ten questions were added whose key points state equally well documented facts in deliberately different wording, and on those the rules do separate. Term weighting locates 22 of 43 paraphrased key points against plain overlap's 16, gaining 7 and losing none, while winning narrowly on the original set. Stemming loses on both subsets. Weighting is the rule in use, and the constant naming it records why.
 
 **Where the page cannot be read, the snippet is used and the run says so.** Blocked, dead, non-HTML and cookie-wall pages all fall back to the snippet, each with its reason recorded, and every result carries the share of claims judged from page content. A support rate resting mostly on snippets is a weaker measurement than one resting on pages, and that difference should be visible without rerunning anything. Non-HTML responses are never run through the text extractor: a PDF comes out as noise the judge would then grade a claim against.
 
@@ -117,7 +119,7 @@ The obvious objection is length: selected passages average 2,432 characters agai
 
 **Sub-questions are searched and judged in parallel.** The searcher and the credibility node each make one call per sub-question, and the calls are independent. Four fresh sub-questions took a median 1.71 seconds in sequence and 0.37 seconds in parallel over five alternating trials. Order and failure behaviour are unchanged: results come back in the planner's order, and a rate limit still raises the `TransientError` the graph's retry policy keys on. The tests prove the calls overlap with a barrier that only releases when every call is in flight at once, rather than with timings, so they cannot pass by luck on a fast machine. Workers are capped at four, because the upstream APIs limit per key and more threads mostly buy more rate-limit errors. Each thread gets its own Tavily client, since the client shares one `requests.Session` and `requests` does not promise a session is safe across threads.
 
-**Judges and backends are injected.** The credibility node takes a relevance function, the harness takes URL-checker, support, and coverage functions, and the searcher takes a backend. This is not abstraction for its own sake: it is what makes the scoring logic, the sorting logic, and the aggregation logic testable without a key. 126 tests run in a few seconds, and `-m "not network"` skips the nine that need the internet, which is what CI runs.
+**Judges and backends are injected.** The credibility node takes a relevance function, the harness takes URL-checker, support, and coverage functions, and the searcher takes a backend. This is not abstraction for its own sake: it is what makes the scoring logic, the sorting logic, and the aggregation logic testable without a key. 119 tests run in a few seconds, and `-m "not network"` skips the nine that need the internet, which is what CI runs.
 
 ## Evaluation
 
@@ -129,7 +131,7 @@ Variants are compared **paired by question with a bootstrap 95 percent confidenc
 
 ### Results
 
-**Not yet run.** Scoring both variants over 18 questions takes roughly 200 model calls across planning, synthesis, credibility scoring, and two judges, and needs an `ANTHROPIC_API_KEY` that the machine this was built on does not have.
+**Not yet run.** Scoring both variants over 28 questions takes roughly 300 model calls across planning, synthesis, credibility scoring, and two judges, and needs an `ANTHROPIC_API_KEY` that the machine this was built on does not have.
 
 There are no placeholder numbers anywhere in this repo, and that is deliberate. The argument being made here is that portfolio agents skip honest measurement; shipping invented measurements would be the one unrecoverable way to lose it. The harness, metrics, and comparison are implemented and tested; `evals/` holds the question set and will hold the results and `comparison.md` once the runs happen.
 
@@ -140,7 +142,7 @@ These apply to the numbers whenever they land, and are worth reading before beli
 - **The reference answers are the weakest link.** They are hand-written, and encode one view of what a good answer covers. A correct point missing from the key point list cannot be credited.
 - **The judges share a model family with the agent.** A model grading output from its own family may share its blind spots and be generous to phrasing it would have produced. An independent judge, or a human spot check, is the honest next step.
 - **No inter-rater reliability.** Each judgment is one call with no second opinion, so re-running will not reproduce scores exactly.
-- **18 questions is small.** Differences of a few points are inside what this sample can resolve, which is exactly why the comparison reports intervals and refuses to name a winner when they span zero.
+- **28 questions is still small.** Differences of a few points are inside what this sample can resolve, which is exactly why the comparison reports intervals and refuses to name a winner when they span zero.
 
 Full detail in [notes/evaluation.md](notes/evaluation.md).
 
@@ -171,7 +173,8 @@ Two bugs found while building this are worth recording, since both were the kind
 ## What I would change for production
 
 - **Judge independence.** Move the support and coverage judges to a different model family, and validate a sample against human labels before trusting either number.
-- **A bigger question set, and a harder one.** 18 stable, well-documented questions cannot separate variants that differ slightly. Questions with contested or thinly sourced answers are where a citation-checking agent earns its keep.
+- **Questions with contested answers.** The set is now 28, and 10 of those are hard in one specific way: their key points are worded away from their sources. All 28 still have settled, well-documented answers, which is the easy case for a citation-checking agent. Questions where sources disagree, or where the answer is thinly sourced, are where one earns its keep, and they need a way to write reference answers that does not pretend the disagreement away.
+- **Independent evidence for the ranking rule.** The paraphrased subset was written by the same person as the rule it vindicated, and written after it, to create a case the plain rule should struggle with. It did that, which is also its weakness. The independent version measures the same thing over claims a real run actually cited, which needs the paid backend and a key.
 - **Passage selection that handles paraphrase.** Stemming and term weighting were tried and neither separates from plain overlap on this question set, but the case they were built for is barely present in it: these key points share wording with the pages that answer them. Embeddings would handle genuine paraphrase, at the cost of putting a model in the evidence path, and the test that would justify that is a question set whose reference points are deliberately worded away from their sources.
 - **Fetch outcomes measured on the paid backend, not only Wikipedia.** All 54 pages in the snippet-versus-page run fetched cleanly, which says more about Wikipedia than about the web. A mix of news and vendor pages behind consent walls would fall back to snippets far more often, and that fallback rate is what decides how much the page layer is worth in practice.
 - **Cost and token accounting per run.** The credibility node costs a model call per sub-question and should have to justify that against measured gain, which requires the spend on the same axis as the score.
@@ -194,7 +197,7 @@ src/evidence_agent/
   concurrency.py      parallel calls that keep order and typed failures
   evaluation/         harness, metrics, page evidence, paired comparison
   ui/render.py        testable presentation helpers
-evals/dataset.json    18 questions with reference answers and key points
+evals/dataset.json    28 questions in two subsets, with reference answers and key points
 evals/snippet-vs-page.md  measured: page passages against search snippets
 notes/                credibility and evaluation design, with limitations
 streamlit_app.py      demo UI

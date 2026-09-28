@@ -2,9 +2,17 @@
 
 ## What gets measured
 
-18 research questions in `evals/dataset.json`, each with a hand-written
+28 research questions in `evals/dataset.json`, each with a hand-written
 reference answer and a list of key points. For every question the harness runs
 the agent and records four things.
+
+The questions come in two subsets. The `core` 18 were chosen to have stable,
+widely documented answers, and their key points are written in the vocabulary the
+sources use. The 10 `paraphrase` questions state facts that are equally well
+documented, with every key point deliberately worded away from the phrasing a
+source would use. They were added for the passage-ranking ablation below, which
+the core set could not separate, and they are reported apart from it rather than
+pooled with it.
 
 **Citation validity, part one: does the URL exist.** Every cited URL is
 fetched. A 2xx or 3xx counts as live, a 404 or similar counts as dead, and a
@@ -81,7 +89,7 @@ the fetch outcomes here are the optimistic case. The figures also move between
 runs, from 85 to 87 of 100 on the page column, because the search results and
 the pages behind them are live.
 
-### Which ranking rule, and why it is still the plain one
+### Which ranking rule, and how the question set decided it
 
 Two improvements to the ranking are implemented alongside the plain term
 overlap: light stemming, so that "shorter wavelengths scatter" matches "shorter
@@ -94,17 +102,31 @@ own notion of a match, which matters more than it sounds: stemming and weighting
 raise the measured coverage of everything they touch, including of passages
 picked at random, so a rule scored by its own rule wins by construction.
 
-On that yardstick, stemming locates 84 of 100 key points against the plain
-rule's 86, and weighting reaches 88, gaining 3 points and losing 1. The gain is
-inside the run-to-run drift above, so it is recorded and not acted on: the rule
-in use is named in one constant and changes when a larger question set can
-separate them.
+On the core 18 questions nothing separated. Stemming located a couple fewer key
+points than plain overlap and weighting a couple more, both inside the
+run-to-run drift, so the rule in use stayed plain and the finding was recorded
+rather than acted on.
 
-The likelier reason nothing separates is that this question set is the easy case
-for exact matching. Its key points were written alongside the reference answers
-and share wording with the pages that answer them, so there is little paraphrase
-for either rule to recover. A question set written deliberately away from its
-sources is what would test them.
+The suspected reason was the question set rather than the rules: its key points
+share wording with the pages that answer them, which is the easy case for exact
+matching. That is a testable suspicion, so the 10 paraphrase questions were
+written to remove exactly that advantage, from knowledge rather than from the
+pages, so the wording was not chosen against any particular source.
+
+They are much harder, which is the sample working: 51 percent of the paraphrased
+key points are locatable in a page against 88 percent of the core ones, and none
+at all are locatable in a search snippet. And on them the rules do separate.
+Term weighting locates 22 of 43 against plain overlap's 16, gaining 7 and losing
+none, while winning narrowly on the core set. Stemming loses on both. Weighting
+is now the rule in use, and the constant naming it records the measurement that
+changed it.
+
+The honest limitation is that the subset was written by the same person as the
+rule it vindicated, and written after it, to create a case the plain rule should
+struggle with. It did that, which is also its weakness: a sample built to expose
+a gap is not independent evidence that the gap matters in production. The
+independent version is the same measurement over claims a real run cited, which
+needs the paid backend and a key.
 
 ### When the page cannot be read
 
@@ -147,7 +169,7 @@ its own right, not noise to be cleaned up before reporting.
 - **No inter-rater reliability.** Each judgment is a single model call with no
   second opinion and no measure of how stable it is across runs. Re-running the
   same eval will not give byte-identical scores.
-- **18 questions is small.** Differences of a few percentage points between
+- **28 questions is still small.** Differences of a few percentage points between
   variants are inside the noise this sample size can resolve, and should not be
   reported as improvements.
 - **Coverage rewards matching a fixed answer.** An agent that surfaces a
